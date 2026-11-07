@@ -298,12 +298,12 @@ def build(base):
 """
     pages.append(("methodology.html", "How We Verify Newsletter Platform Prices", "Our method for checking newsletter platform prices and the fixed-task tests we run on each platform.", body, None))
 
-    # ---- changelog
+    # ---- changelog (from data/platforms.json "changelog", newest first)
+    entries = "".join(f"<h2>{html.escape(e['date'])}</h2><ul>" + "".join(f"<li>{html.escape(c)}</li>" for c in e["changes"]) + "</ul>" for e in DATA.get("changelog", []))
     body = f"""
 <h1>Price change log</h1>
 <p>Every time we re-check prices, changes are recorded here, newest first.</p>
-<h2>{DATA['verified_on']}</h2>
-<ul><li>First full verification of Kit, beehiiv, MailerLite, Ghost(Pro), Substack, systeme.io and Buttondown free-plan limits.</li></ul>
+{entries}
 """
     pages.append(("changelog.html", "Newsletter Platform Price Change Log", "A dated log of price changes we've found on newsletter platform pricing pages.", body, None))
 
