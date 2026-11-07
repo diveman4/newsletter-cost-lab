@@ -8,6 +8,7 @@ import argparse, html, json, math, os, shutil, datetime
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = json.load(open(os.path.join(ROOT, "data", "platforms.json")))
 SITE_NAME = "Newsletter Cost Lab"
+GSC_VERIFICATION = "8OATEkWut0D8qP_lGnY6NPHhcCzGoT8kGBMH8Hik5fw"  # Google Search Console (TA)
 OUT = os.path.join(ROOT, "site")
 
 # ---------- cost model (mirrors assets/calc.js) ----------
@@ -73,6 +74,7 @@ def page(path, title, desc, body, base, jsonld=None):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="{GSC_VERIFICATION}">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
 <link rel="canonical" href="{url}">
