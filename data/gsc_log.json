@@ -8,10 +8,16 @@
     "top_queries": [],
     "top_pages": [],
     "index_status": {
-      "indexed": ["/", "/kit-vs-beehiiv-cost.html"],
-      "not_indexed_requested": ["/free-plans.html", "/substack-fees.html"]
+      "indexed": [
+        "/",
+        "/kit-vs-beehiiv-cost.html"
+      ],
+      "not_indexed_requested": [
+        "/free-plans.html",
+        "/substack-fees.html"
+      ]
     },
     "sitemap": "/sitemap.xml resubmitted 2026-11-08 (status was 'Couldn't fetch', normal for a new property). Mistaken HTML entries /free-plans.html and /substack-fees.html removed from Sitemaps (with TA's OK).",
-    "actions": "Indexing requested (with TA's OK) for /, /kit-vs-beehiiv-cost.html, /substack-fees.html, /free-plans.html."
+    "actions": "Indexing requested (with TA's OK) for /, /kit-vs-beehiiv-cost.html, /substack-fees.html, /free-plans.html. Later on 2026-11-08 (with TA's OK): indexing requested for /kit-pricing.html, /beehiiv-pricing.html, /cheapest-newsletter-platform-10000-subscribers.html (new pages)."
   }
 ]
