@@ -27,7 +27,7 @@
     var paidNeeded = paidSubs > 0, fm = p.fee_model;
     if (paidNeeded && fm.type === "not_compared") return { skip: "paid newsletters not compared yet" };
     var opts = options(p, subs, paidNeeded, billing);
-    if (!opts.length) return { skip: p.id === "buttondown" ? "price above 100 subscribers not verified yet" : "no plan for this list size in our data" };
+    if (!opts.length) return { skip: "no plan for this list size in our data" };
     var best = opts.reduce(function (a, b) { return b[1] < a[1] ? b : a; });
     var rev = paidSubs * price, fees = 0;
     if (paidNeeded) {

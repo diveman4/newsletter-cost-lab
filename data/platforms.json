@@ -1,5 +1,5 @@
 {
-  "verified_on": "2026-11-07",
+  "verified_on": "2026-11-08",
   "currency": "USD",
   "notes": "Prices are the monthly amount shown on each vendor's public pricing page. 'annual' = monthly equivalent when billed yearly; 'monthly' = billed month-to-month. A tier value applies up to that subscriber count. null = not offered / not verified.",
   "processing": {
@@ -154,7 +154,7 @@
         }
       ],
       "affiliate_program": {
-        "summary": "50% of payments for a referral's first 12 months; 10-20% after year one if you reach Bronze/Silver/Gold status (10+/50+/100+ paying referrals a year). Runs on PartnerStack.",
+        "summary": "50% of payments for a referral's first 12 months. Refer 10+ paying customers in a year to also earn 10% recurring for as long as they stay. Runs on PartnerStack.",
         "source": "https://kit.com/affiliate"
       }
     },
@@ -279,7 +279,7 @@
         }
       ],
       "affiliate_program": {
-        "summary": "50% of a referral's payments for 12 months at the base tier, rising to 55-60% at higher tiers. Requires a beehiiv account; paid via PayPal.",
+        "summary": "Up to 60% of a referral's payments for 12 months: 50% from your first conversion (Bronze), 55% at Silver, 60% at Gold. Requires a beehiiv account; payouts monthly via Dub.",
         "source": "https://www.beehiiv.com/partners"
       }
     },
@@ -503,7 +503,7 @@
         }
       ],
       "affiliate_program": {
-        "summary": "30% lifetime recurring commission.",
+        "summary": "30% lifetime recurring commission; $100 minimum payout.",
         "source": "https://www.mailerlite.com/affiliate"
       }
     },
@@ -708,17 +708,75 @@
       "free_plan": {
         "max_subscribers": 100,
         "paid_subscriptions": false,
-        "summary": "Free for your first 100 subscribers. Features such as paid subscriptions are +$9/month add-ons."
+        "summary": "Free for your first 100 subscribers. Paid tiers start at $9/month; features such as paid subscriptions are +$9/month add-ons."
       },
       "fee_model": {
         "type": "not_compared",
-        "label": "Subscriber tiers not yet verified"
+        "label": "Paid subscriptions are a +$9/month add-on; paid-newsletter fees not compared yet"
       },
-      "plans": [],
-      "affiliate_program": null
+      "plans": [
+        {
+          "name": "Basic (no add-ons)",
+          "paid_subscriptions": false,
+          "monthly_factor_note": "Yearly price shown on Buttondown's page divided by 12. Prices assume at most one email a day to the whole list. Features such as paid subscriptions, analytics and automations are extra add-ons.",
+          "tiers": [
+            [
+              1000,
+              7.5,
+              9
+            ],
+            [
+              5000,
+              24.17,
+              29
+            ],
+            [
+              10000,
+              65.83,
+              79
+            ],
+            [
+              20000,
+              115.83,
+              139
+            ],
+            [
+              40000,
+              199.17,
+              239
+            ],
+            [
+              60000,
+              265.83,
+              319
+            ],
+            [
+              80000,
+              315.83,
+              379
+            ],
+            [
+              99999,
+              382.5,
+              459
+            ]
+          ]
+        }
+      ],
+      "affiliate_program": null,
+      "annual_note": "Annual price = Buttondown's stated yearly price (two months free) divided by 12. 100,000+ subscribers is a custom quote."
     }
   ],
   "changelog": [
+    {
+      "date": "2026-11-08",
+      "changes": [
+        "Re-checked all prices (Kit, beehiiv, MailerLite, Ghost(Pro), Substack, systeme.io, Buttondown); no price changes.",
+        "Buttondown: subscriber tiers now verified and added ($9/mo up to 1,000; $29 up to 5,000; $79 up to 10,000; $139 up to 20,000; $239 up to 40,000; $319 up to 60,000; $379 up to 80,000; $459 below 100,000; yearly = 10x monthly).",
+        "Kit affiliate program: after year one, 10% recurring now applies once you refer 10+ paying customers in a year (previous Bronze/Silver/Gold wording removed from Kit's page).",
+        "beehiiv partner program: payouts now handled via Dub (previously listed as PayPal)."
+      ]
+    },
     {
       "date": "2026-11-07",
       "changes": [

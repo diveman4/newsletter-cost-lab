@@ -37,8 +37,6 @@ def cost(p, subs, paid_subs=0, price=0.0, billing="annual"):
         return {"skip": "paid newsletters not compared yet"}
     opts = list(plan_options(p, subs, paid_needed, billing))
     if not opts:
-        if p["id"] == "buttondown":
-            return {"skip": "price above 100 subscribers not verified yet"}
         return {"skip": "no plan for this list size in our data"}
     plan, base = min(opts, key=lambda o: o[1])
     rev = paid_subs * price
@@ -53,7 +51,7 @@ def cost(p, subs, paid_subs=0, price=0.0, billing="annual"):
 
 
 def money(x):
-    return "$0" if x == 0 else ("$" + (f"{x:,.0f}" if x >= 100 else f"{x:,.2f}".rstrip("0").rstrip(".")))
+    return "$0" if x == 0 else ("$" + (f"{x:,.0f}" if x >= 100 else f"{x:,.2f}".removesuffix(".00")))
 
 # ---------- layout ----------
 
@@ -169,12 +167,13 @@ def build(base):
 
 <h2>Monthly price by list size (free newsletter, yearly billing)</h2>
 <div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
-<p class="fine">The cheapest plan that holds the list is used. "–" means the platform has no plan for that size in our data, or the price isn't verified yet. Buttondown is free up to 100 subscribers; its paid tiers are not verified yet.</p>
+<p class="fine">The cheapest plan that holds the list is used. "–" means the platform has no plan for that size in our data, or the price isn't verified yet. Buttondown prices are its base plan without add-ons (paid subscriptions and other features cost extra).</p>
 
 <h2>Before you pick on price alone</h2>
 <ul>
 <li><strong>Free-plan ceilings differ a lot:</strong> 100 (Buttondown) to 10,000 (Kit) subscribers. See <a href="free-plans.html">the free plan comparison</a>.</li>
 <li><strong>Paid newsletters change the maths.</strong> A percentage cut is cheap when you're small and expensive when you grow.</li>
+<li><strong>Deciding between Kit and beehiiv?</strong> See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a>.</li>
 <li><strong>Switching later has a cost.</strong> Paid subscribers on some platforms can't simply be moved. Pick a platform you can stay on for at least a year.</li>
 </ul>
 <script src="assets/calc.js" defer></script>
@@ -205,6 +204,7 @@ def build(base):
 <li><strong>You only need a small list for now:</strong> beehiiv (2,500) also works, but paid subscriptions need a paid plan.</li>
 </ul>
 <p>Want the monthly price once you outgrow the free plan? <a href="index.html">Use the cost calculator</a>.</p>
+<p>Kit and beehiiv side by side once you pass their free limits: <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a>.</p>
 """
     pages.append(("free-plans.html", "Newsletter Platform Free Plans Compared (Subscriber Limits, " + DATA["verified_on"][:4] + ")",
                   "Free plan subscriber limits for Kit, beehiiv, Substack, systeme.io, MailerLite, Buttondown and Ghost, and whether you can charge readers on each.", body, None))
@@ -273,6 +273,101 @@ def build(base):
           "dateModified": DATA["verified_on"], "datePublished": DATA["verified_on"], "author": {"@type": "Organization", "name": SITE_NAME}}
     pages.append(("guides/choose-your-first-newsletter-platform.html", "How to Choose Your First Newsletter Platform (6-Question Checklist)",
                   "A practical checklist for picking your first newsletter tool: list size, paid subscriptions, automations, cost at scale and switching risk.", body, ld))
+
+    # ---- Kit vs beehiiv (all numbers computed from platforms.json)
+    kit, bee = P["kit"], P["beehiiv"]
+    kv_sizes = [1000, 2500, 5000, 10000, 15000, 25000, 50000]
+
+    def cell(c):
+        return f'{money(c["total"])}<small>{html.escape(c["plan"])}</small>' if "total" in c else "–"
+
+    def winner(a, b):
+        if "total" not in a or "total" not in b:
+            return "–"
+        if a["total"] == b["total"]:
+            return "Same"
+        return "Kit" if a["total"] < b["total"] else "beehiiv"
+
+    def free_rows(billing):
+        r = ""
+        for s in kv_sizes:
+            a, b = cost(kit, s, billing=billing), cost(bee, s, billing=billing)
+            r += f"<tr><td>{s:,}</td><td>{cell(a)}</td><td>{cell(b)}</td><td>{winner(a, b)}</td></tr>"
+        return r
+
+    def plan_price(p, plan_name, s, idx):
+        for pl in p["plans"]:
+            if pl["name"] == plan_name:
+                for t in pl["tiers"]:
+                    if s <= t[0]:
+                        return t[idx]
+        return None
+
+    pair_rows = ""
+    for s in kv_sizes:
+        vals = [plan_price(kit, "Creator", s, 1), plan_price(bee, "Lite", s, 1), plan_price(kit, "Pro", s, 1), plan_price(bee, "Pro", s, 1)]
+        pair_rows += f"<tr><td>{s:,}</td>" + "".join(f"<td>{money(v) if v is not None else '–'}</td>" for v in vals) + "</tr>"
+
+    kv_price, kv_share = 8, 0.05
+    paid_rows = ""
+    for s in kv_sizes:
+        paid = int(s * kv_share)
+        a, b = cost(kit, s, paid, kv_price), cost(bee, s, paid, kv_price)
+        paid_rows += (f"<tr><td>{s:,}</td><td>{paid:,} (${paid*kv_price:,}/mo)</td>"
+                      f"<td>{cell(a)}</td><td>{cell(b)}</td><td>{winner(a, b)}</td></tr>")
+
+    kit_free = kit["free_plan"]["max_subscribers"]
+    bee_free = bee["free_plan"]["max_subscribers"]
+    kfm, pr = kit["fee_model"], DATA["processing"]
+    # first list size (from beehiiv's tier boundaries) where beehiiv's cheapest paid-newsletter option beats Kit's at 5% paying
+    flip = None
+    for s in kv_sizes:
+        paid = int(s * kv_share)
+        a, b = cost(kit, s, paid, kv_price), cost(bee, s, paid, kv_price)
+        if "total" in a and "total" in b and b["total"] < a["total"]:
+            flip = (s, a, b)
+            break
+    flip_txt = "In our paid-newsletter example, Kit stays cheaper at every list size we have data for."
+    if flip:
+        flip_txt = f"In our paid-newsletter example, beehiiv is first the cheaper option at {flip[0]:,} subscribers ({money(flip[2]['total'])} vs {money(flip[1]['total'])} a month)."
+    kit_pro_note = next((pl.get("monthly_factor_note", "") for pl in kit["plans"] if pl["name"] == "Pro"), "")
+    body = f"""
+<h1>Kit vs beehiiv: what each costs at every list size</h1>
+<p class="lede">Kit and beehiiv are both popular with people starting a newsletter, but they price very differently. This page puts their published prices side by side at each list size, for a free newsletter and for one that charges readers. Prices verified on each vendor's pricing page on {DATA['verified_on']}.</p>
+{disclosure_box('')}
+<h2>The short version</h2>
+<ul>
+<li><strong>Free plans:</strong> Kit is free up to {kit_free:,} subscribers; beehiiv is free up to {bee_free:,}. Between those sizes, a free newsletter costs $0 on Kit but needs a paid beehiiv plan.</li>
+<li><strong>Charging readers:</strong> Kit's free plan allows paid subscriptions with a {kfm['pct']}% + ${kfm['fixed']:.2f} transaction fee. beehiiv needs a paid plan (Lite or above) but takes a 0% cut, so you pay only Stripe's {pr['stripe_pct']}% + ${pr['stripe_fixed']:.2f}.</li>
+<li>{flip_txt}</li>
+</ul>
+
+<h2>Free newsletter, yearly billing (monthly equivalent)</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{platform_link(kit)}</th><th>{platform_link(bee)}</th><th>Cheaper</th></tr></thead><tbody>{free_rows('annual')}</tbody></table></div>
+
+<h2>Free newsletter, month-to-month billing</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>Kit</th><th>beehiiv</th><th>Cheaper</th></tr></thead><tbody>{free_rows('monthly')}</tbody></table></div>
+<p class="fine">The cheapest plan that holds the list is used for each platform. Kit's month-to-month prices are calculated from the yearly saving Kit states on its pricing page.</p>
+
+<h2>Plan against plan, yearly billing</h2>
+<p>If you already know you want a paid plan (for example for automations or to remove branding), these are the entry and upper plans side by side:</p>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>Kit Creator</th><th>beehiiv Lite</th><th>Kit Pro</th><th>beehiiv Pro</th></tr></thead><tbody>{pair_rows}</tbody></table></div>
+<p class="fine">{html.escape(kit_pro_note)} Plan features differ, so compare what each plan includes on the vendor's pricing page before choosing on price.</p>
+
+<h2>Paid newsletter example: {int(kv_share*100)}% of readers pay ${kv_price}/month</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>Paying readers</th><th>Kit total / month</th><th>beehiiv total / month</th><th>Cheaper</th></tr></thead><tbody>{paid_rows}</tbody></table></div>
+<p class="fine">Totals are plan price (yearly billing) plus fees on paid subscriptions: Kit's {kfm['pct']}% + ${kfm['fixed']:.2f} per transaction, or Stripe's standard {pr['stripe_pct']}% + ${pr['stripe_fixed']:.2f} with beehiiv's 0% cut. One card payment per paying reader per month is assumed. Your own numbers will differ; try them in the <a href="index.html">cost calculator</a>.</p>
+
+<h2>Things the price tables don't show</h2>
+<ul>
+<li>Kit's free plan has no visual automations; beehiiv's free plan has no paid subscriptions.</li>
+<li>Kit sometimes runs a first-year discount on Pro. The tables use the standard price.</li>
+<li>Both vendors change prices from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
+</ul>
+<p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
+"""
+    pages.append(("kit-vs-beehiiv-cost.html", "Kit vs beehiiv Cost at Every List Size (" + DATA["verified_on"][:4] + ")",
+                  "Kit vs beehiiv prices side by side from 1,000 to 50,000 subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
 
     # ---- methodology
     srcs = "".join(f"<li>{html.escape(p['name'])}: <a href='{html.escape(p['pricing_url'])}' rel='noopener' target='_blank'>{html.escape(p['pricing_url'])}</a></li>" for p in DATA["platforms"])
