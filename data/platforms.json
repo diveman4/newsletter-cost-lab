@@ -163,7 +163,7 @@
       "name": "beehiiv",
       "pricing_url": "https://www.beehiiv.com/pricing",
       "official_url": "https://www.beehiiv.com/",
-      "affiliate_url": null,
+      "affiliate_url": "https://www.beehiiv.com/?via=t-a",
       "free_plan": {
         "max_subscribers": 2500,
         "paid_subscriptions": false,
