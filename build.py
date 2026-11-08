@@ -176,6 +176,15 @@ def build(base):
 <li><strong>Deciding between Kit and beehiiv?</strong> See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a>.</li>
 <li><strong>Switching later has a cost.</strong> Paid subscribers on some platforms can't simply be moved. Pick a platform you can stay on for at least a year.</li>
 </ul>
+
+<h2>Price guides</h2>
+<ul>
+<li><a href="kit-pricing.html">Kit pricing explained</a>: every plan and list size, yearly vs monthly</li>
+<li><a href="beehiiv-pricing.html">beehiiv pricing explained</a>: Free, Lite and Pro at every list size</li>
+<li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
+<li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
+<li><a href="substack-fees.html">Substack fees vs flat-price plans</a></li>
+</ul>
 <script src="assets/calc.js" defer></script>
 """
     ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Newsletter platform cost calculator",
@@ -368,6 +377,153 @@ def build(base):
 """
     pages.append(("kit-vs-beehiiv-cost.html", "Kit vs beehiiv Cost at Every List Size (" + DATA["verified_on"][:4] + ")",
                   "Kit vs beehiiv prices side by side from 1,000 to 50,000 subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
+
+    # ---- single-platform pricing pages (all numbers from platforms.json)
+    def tier_price(plan, s, idx):
+        for t in plan["tiers"]:
+            if s <= t[0]:
+                return t[idx]
+        return None
+
+    def cheapest_other(p, s, billing="annual"):
+        best = None
+        for q in DATA["platforms"]:
+            if q["id"] in (p["id"], "substack"):
+                continue
+            c = cost(q, s, billing=billing)
+            if "total" in c and (best is None or c["total"] < best[1]["total"]):
+                best = (q, c)
+        return best
+
+    def pricing_page(pid, fname, extra_note=""):
+        p = P[pid]
+        fp = p["free_plan"]
+        sizes = sorted({t[0] for pl in p["plans"] for t in pl["tiers"]})
+        head = "".join(f"<th>{html.escape(pl['name'])}<br><small>yearly</small></th><th>{html.escape(pl['name'])}<br><small>monthly</small></th>" for pl in p["plans"])
+        rows = ""
+        for s in sizes:
+            cells = ""
+            for pl in p["plans"]:
+                y, m = tier_price(pl, s, 1), tier_price(pl, s, 2)
+                cells += f"<td>{money(y) if y is not None else '–'}</td><td>{money(m) if m is not None else '–'}</td>"
+            rows += f"<tr><td>{s:,}</td>{cells}</tr>"
+        entry = p["plans"][0]
+        e_y, e_m = entry["tiers"][0][1], entry["tiers"][0][2]
+        savings = [round((1 - t[1] / t[2]) * 100) for t in entry["tiers"] if t[2]]
+        save_txt = f"{min(savings)}%" if min(savings) == max(savings) else f"{min(savings)}-{max(savings)}%"
+        fm = p["fee_model"]
+        pr = DATA["processing"]
+        if fm["type"] == "own_processing":
+            fee_txt = f"{p['name']} charges {fm['pct']}% + ${fm['fixed']:.2f} per transaction on paid subscriptions."
+        elif fm["type"] == "stripe":
+            fee_txt = f"{p['name']} takes {fm['pct']:g}% of paid-subscription revenue; Stripe's standard {pr['stripe_pct']}% + ${pr['stripe_fixed']:.2f} per payment still applies."
+        else:
+            fee_txt = html.escape(fm["label"]) + "."
+        # what each step up costs, and the cheapest alternative at the same size
+        cmp_sizes = [s for s in [1000, 5000, 10000, 25000, 50000, 100000] if "total" in cost(p, s)]
+        cmp_rows = ""
+        for s in cmp_sizes:
+            c = cost(p, s)
+            o = cheapest_other(p, s)
+            other = f"{html.escape(o[0]['name'])} {html.escape(o[1]['plan'])}: {money(o[1]['total'])}" if o else "–"
+            cmp_rows += f"<tr><td>{s:,}</td><td>{money(c['total'])}<small>{html.escape(c['plan'])}</small></td><td>{other}</td></tr>"
+        notes = " ".join(html.escape(pl["monthly_factor_note"]) for pl in p["plans"] if pl.get("monthly_factor_note"))
+        if p.get("annual_note"):
+            notes += " " + html.escape(p["annual_note"])
+        year = DATA["verified_on"][:4]
+        plan_names = ", ".join(pl["name"] for pl in p["plans"])
+        body = f"""
+<h1>{html.escape(p['name'])} pricing explained: what you'll pay at every list size</h1>
+<p class="lede">{html.escape(p['name'])} prices depend on your subscriber count and on whether you pay yearly or monthly. This page lists every price on {html.escape(p['name'])}'s own <a href="{html.escape(p['pricing_url'])}" rel="noopener" target="_blank">pricing page</a>, checked on {DATA['verified_on']}.</p>
+{disclosure_box('')}
+<h2>The short version</h2>
+<ul>
+<li><strong>Free plan:</strong> {html.escape(fp['summary'])} {"You can charge readers on the free plan." if fp["paid_subscriptions"] else "Paid subscriptions need a paid plan."}</li>
+<li><strong>Paid plans:</strong> {html.escape(plan_names)}. The cheapest starts at {money(e_y)}/month billed yearly ({money(e_m)} month to month) for up to {entry['tiers'][0][0]:,} subscribers.</li>
+<li><strong>Yearly billing</strong> saves about {save_txt} on the {html.escape(entry['name'])} plan, depending on list size.</li>
+<li><strong>Paid newsletters:</strong> {fee_txt}</li>
+</ul>
+<h2>{html.escape(p['name'])} price by list size</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers up to</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
+<p class="fine">"Yearly" is the monthly equivalent when billed yearly. "–" means that plan isn't offered at that size in our data. {notes} {extra_note}</p>
+<h2>How {html.escape(p['name'])} compares at the same size</h2>
+<p>For a free newsletter on yearly billing, here is {html.escape(p['name'])}'s cheapest option next to the cheapest option on any other platform we track (Substack excluded, since it's free until you charge):</p>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{platform_link(p)}</th><th>Cheapest elsewhere</th></tr></thead><tbody>{cmp_rows}</tbody></table></div>
+<p class="fine">Plans differ in features, so the cheapest price isn't automatically the best fit. Run your own numbers, including paid subscribers, in the <a href="index.html">cost calculator</a>.</p>
+<h2>Related</h2>
+<ul>
+<li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
+<li><a href="free-plans.html">Free plans compared</a></li>
+<li><a href="changelog.html">Price change log</a></li>
+</ul>
+<p>We haven't run hands-on tests of {html.escape(p['name'])} yet, so this page covers published prices and limits only.</p>
+"""
+        pages.append((fname, f"{p['name']} Pricing {year}: Every Plan and List Size Explained",
+                      f"{p['name']} pricing at every subscriber count: free plan limit, {plan_names} prices on yearly and monthly billing, and paid-newsletter fees. Verified {DATA['verified_on']}.", body, None))
+
+    pricing_page("kit", "kit-pricing.html", "Kit's month-to-month prices above are calculated from the yearly saving Kit states.")
+    pricing_page("beehiiv", "beehiiv-pricing.html")
+
+    # ---- cheapest at 10,000 subscribers
+    S10 = 10000
+
+    def rank_rows(s, paid=0, price=0, billing="annual", include_substack=True):
+        res = []
+        for q in DATA["platforms"]:
+            if not include_substack and q["id"] == "substack":
+                continue
+            c = cost(q, s, paid, price, billing)
+            if "total" in c:
+                res.append((q, c))
+        res.sort(key=lambda r: r[1]["total"])
+        return res
+
+    def rows_html(res, show_fees=False):
+        out = ""
+        for i, (q, c) in enumerate(res):
+            fee = f"<td>{money(c['fees'])}</td>" if show_fees else ""
+            out += f"<tr{' class=\"best\"' if i == 0 else ''}><td>{platform_link(q)}</td><td>{html.escape(c['plan'])}</td><td>{money(c['base'])}</td>{fee}<td>{money(c['total'])}</td></tr>"
+        return out
+
+    free_y = rank_rows(S10)
+    free_m = rank_rows(S10, billing="monthly")
+    paid_n, paid_price = 500, 8
+    paid_y = rank_rows(S10, paid_n, paid_price)
+    over = 12000
+    over_y = rank_rows(over, include_substack=False)
+    best_free = [r for r in free_y if r[0]["id"] != "substack"][0]
+    best_paid = paid_y[0]
+    best_over = over_y[0]
+    skipped_paid = [q["name"] for q in DATA["platforms"] if "skip" in cost(q, S10, paid_n, paid_price)]
+    body = f"""
+<h1>Cheapest newsletter platform for 10,000 subscribers</h1>
+<p class="lede">10,000 subscribers is where many free plans end and prices start to climb. This page ranks every platform we track by what it costs at exactly 10,000 subscribers, for a free newsletter and for a paid one. Prices verified on each vendor's pricing page on {DATA['verified_on']}.</p>
+{disclosure_box('')}
+<h2>The short version</h2>
+<ul>
+<li><strong>Free newsletter:</strong> {html.escape(best_free[0]['name'])} {html.escape(best_free[1]['plan'])} is cheapest at {money(best_free[1]['total'])}/month (Substack is also $0 if you never charge).</li>
+<li><strong>Paid newsletter</strong> ({paid_n} readers paying ${paid_price}/month): {html.escape(best_paid[0]['name'])} {html.escape(best_paid[1]['plan'])} is cheapest at {money(best_paid[1]['total'])}/month including fees.</li>
+<li><strong>Growing past 10,000?</strong> At {over:,} subscribers the cheapest option becomes {html.escape(best_over[0]['name'])} {html.escape(best_over[1]['plan'])} at {money(best_over[1]['total'])}/month, so check the next tier before you commit.</li>
+</ul>
+
+<h2>Free newsletter at 10,000 subscribers, yearly billing</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(free_y)}</tbody></table></div>
+
+<h2>Free newsletter at 10,000 subscribers, month-to-month billing</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(free_m)}</tbody></table></div>
+
+<h2>Paid newsletter: {paid_n} paying readers at ${paid_price}/month</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Fees</th><th>Total / month</th></tr></thead><tbody>{rows_html(paid_y, True)}</tbody></table></div>
+<p class="fine">Fees are the platform's cut plus card processing, assuming one payment per paying reader per month (Stripe standard {DATA['processing']['stripe_pct']}% + ${DATA['processing']['stripe_fixed']:.2f}; Kit uses its own {P['kit']['fee_model']['pct']}% + ${P['kit']['fee_model']['fixed']:.2f}). Not shown: {html.escape(', '.join(skipped_paid)) or 'none'} (paid newsletters not compared yet).</p>
+
+<h2>If you'll pass 10,000 soon: prices at {over:,}</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(over_y)}</tbody></table></div>
+<p class="fine">Free newsletter, yearly billing. Plans are priced in tiers, so a few hundred extra subscribers can move you into the next price band.</p>
+<p>Different list size? Use the <a href="index.html">cost calculator</a>. Only comparing two platforms? See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>.</p>
+<p>We haven't run hands-on tests of these platforms yet, so this ranking covers published prices only.</p>
+"""
+    pages.append(("cheapest-newsletter-platform-10000-subscribers.html", "Cheapest Newsletter Platform for 10,000 Subscribers (" + DATA["verified_on"][:4] + ")",
+                  "Every newsletter platform ranked by monthly cost at 10,000 subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
 
     # ---- methodology
     srcs = "".join(f"<li>{html.escape(p['name'])}: <a href='{html.escape(p['pricing_url'])}' rel='noopener' target='_blank'>{html.escape(p['pricing_url'])}</a></li>" for p in DATA["platforms"])
