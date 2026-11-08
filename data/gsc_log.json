@@ -1,0 +1,17 @@
+[
+  {
+    "date": "2026-11-08",
+    "performance": "No data yet (Search Console: 'データを処理しています'; property added 2026-11-07).",
+    "clicks_7d": null,
+    "impressions_7d": null,
+    "avg_position_7d": null,
+    "top_queries": [],
+    "top_pages": [],
+    "index_status": {
+      "indexed": ["/", "/kit-vs-beehiiv-cost.html"],
+      "not_indexed_requested": ["/free-plans.html", "/substack-fees.html"]
+    },
+    "sitemap": "/sitemap.xml resubmitted 2026-11-08 (status was 'Couldn't fetch', normal for a new property). Mistaken HTML entries /free-plans.html and /substack-fees.html removed from Sitemaps (with TA's OK).",
+    "actions": "Indexing requested (with TA's OK) for /, /kit-vs-beehiiv-cost.html, /substack-fees.html, /free-plans.html."
+  }
+]
