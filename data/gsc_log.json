@@ -1,23 +1,83 @@
 [
-  {
-    "date": "2026-11-08",
-    "performance": "No data yet (Search Console: 'データを処理しています'; property added 2026-11-07).",
-    "clicks_7d": null,
-    "impressions_7d": null,
-    "avg_position_7d": null,
-    "top_queries": [],
-    "top_pages": [],
-    "index_status": {
-      "indexed": [
-        "/",
-        "/kit-vs-beehiiv-cost.html"
-      ],
-      "not_indexed_requested": [
-        "/free-plans.html",
-        "/substack-fees.html"
-      ]
-    },
-    "sitemap": "/sitemap.xml resubmitted 2026-11-08 (status was 'Couldn't fetch', normal for a new property). Mistaken HTML entries /free-plans.html and /substack-fees.html removed from Sitemaps (with TA's OK).",
-    "actions": "Indexing requested (with TA's OK) for /, /kit-vs-beehiiv-cost.html, /substack-fees.html, /free-plans.html. Later on 2026-11-08 (with TA's OK): indexing requested for /kit-pricing.html, /beehiiv-pricing.html, /cheapest-newsletter-platform-10000-subscribers.html (new pages)."
-  }
+ {
+  "date": "2026-11-14",
+  "data_range": "Search Console data available 2026-11-06 to 2026-11-10 (last 7 days and last 28 days show the same totals)",
+  "clicks_7d": 0,
+  "impressions_7d": 5,
+  "ctr_7d": 0.0,
+  "avg_position_7d": 34.2,
+  "clicks_28d": 0,
+  "impressions_28d": 5,
+  "ctr_28d": 0.0,
+  "avg_position_28d": 34.2,
+  "top_queries": [
+   {
+    "query": "kit pricing",
+    "clicks": 0,
+    "impressions": 2,
+    "ctr": 0.0,
+    "position": 78.5
+   }
+  ],
+  "top_pages": [
+   {
+    "page": "/kit-pricing.html",
+    "clicks": 0,
+    "impressions": 3,
+    "ctr": 0.0,
+    "position": 55.0
+   },
+   {
+    "page": "/beehiiv-pricing.html",
+    "clicks": 0,
+    "impressions": 1,
+    "ctr": 0.0,
+    "position": 3.0
+   },
+   {
+    "page": "/kit-vs-beehiiv-cost.html",
+    "clicks": 0,
+    "impressions": 1,
+    "ctr": 0.0,
+    "position": 3.0
+   }
+  ],
+  "index_status": {
+   "report_updated": "2026-11-09",
+   "indexed_count": 5,
+   "indexed": [
+    "/",
+    "/kit-pricing.html",
+    "/beehiiv-pricing.html",
+    "/kit-vs-beehiiv-cost.html",
+    "/substack-fees.html"
+   ],
+   "not_indexed_count": 0,
+   "not_indexed_note": "Reason table lists 'Crawled - currently not indexed' (Google systems) but its URL list is empty; summary shows 0 not indexed."
+  },
+  "sitemap": "/sitemap.xml: status 'Couldn't fetch' (submitted 2026-11-08, no last-read date), 0 discovered pages. Live sitemap returns 200 application/xml.",
+  "comparison_vs_last_week": "Last week: no performance data, 2 pages indexed. This week: 5 impressions, 0 clicks, avg position 34.2; 5 pages indexed.",
+  "actions": "Read-only check. No changes made in Search Console."
+ },
+ {
+  "date": "2026-11-08",
+  "performance": "No data yet (Search Console: 'データを処理しています'; property added 2026-11-07).",
+  "clicks_7d": null,
+  "impressions_7d": null,
+  "avg_position_7d": null,
+  "top_queries": [],
+  "top_pages": [],
+  "index_status": {
+   "indexed": [
+    "/",
+    "/kit-vs-beehiiv-cost.html"
+   ],
+   "not_indexed_requested": [
+    "/free-plans.html",
+    "/substack-fees.html"
+   ]
+  },
+  "sitemap": "/sitemap.xml resubmitted 2026-11-08 (status was 'Couldn't fetch', normal for a new property). Mistaken HTML entries /free-plans.html and /substack-fees.html removed from Sitemaps (with TA's OK).",
+  "actions": "Indexing requested (with TA's OK) for /, /kit-vs-beehiiv-cost.html, /substack-fees.html, /free-plans.html. Later on 2026-11-08 (with TA's OK): indexing requested for /kit-pricing.html, /beehiiv-pricing.html, /cheapest-newsletter-platform-10000-subscribers.html (new pages)."
+ }
 ]

@@ -1,5 +1,5 @@
 {
-  "verified_on": "2026-11-08",
+  "verified_on": "2026-11-14",
   "currency": "USD",
   "notes": "Prices are the monthly amount shown on each vendor's public pricing page. 'annual' = monthly equivalent when billed yearly; 'monthly' = billed month-to-month. A tier value applies up to that subscriber count. null = not offered / not verified.",
   "processing": {
@@ -31,7 +31,7 @@
         {
           "name": "Creator",
           "paid_subscriptions": true,
-          "monthly_factor_note": "Monthly billing derived from Kit's stated yearly saving (e.g. $390/yr vs $468 at 1,000).",
+          "monthly_factor_note": "Month-to-month prices read directly from Kit's pricing page with yearly billing switched off.",
           "tiers": [
             [
               1000,
@@ -41,17 +41,17 @@
             [
               3000,
               50,
-              60
+              59
             ],
             [
               5000,
               75,
-              90
+              89
             ],
             [
               8000,
               100,
-              120
+              119
             ],
             [
               10000,
@@ -66,7 +66,7 @@
             [
               20000,
               158,
-              190
+              189
             ],
             [
               25000,
@@ -93,7 +93,7 @@
         {
           "name": "Pro",
           "paid_subscriptions": true,
-          "monthly_factor_note": "Standard (non-promo) price shown. Kit sometimes runs a first-year Pro discount.",
+          "monthly_factor_note": "Standard (non-promo) price shown. Kit sometimes runs a first-year Pro discount. Month-to-month prices read directly from Kit's pricing page.",
           "tiers": [
             [
               1000,
@@ -103,7 +103,7 @@
             [
               3000,
               83,
-              100
+              99
             ],
             [
               5000,
@@ -118,37 +118,37 @@
             [
               10000,
               158,
-              190
+              189
             ],
             [
               15000,
               208,
-              250
+              249
             ],
             [
               20000,
               225,
-              270
+              269
             ],
             [
               25000,
               233,
-              280
+              279
             ],
             [
               35000,
               303,
-              364
+              363
             ],
             [
               45000,
               373,
-              448
+              447
             ],
             [
               55000,
               433,
-              520
+              519
             ]
           ]
         }
@@ -274,6 +274,11 @@
               200000,
               779,
               899
+            ],
+            [
+              250000,
+              869,
+              999
             ]
           ]
         }
@@ -768,6 +773,15 @@
     }
   ],
   "changelog": [
+    {
+      "date": "2026-11-14",
+      "changes": [
+        "Re-checked all prices (Kit, beehiiv, MailerLite, Ghost(Pro), Substack, systeme.io, Buttondown). Yearly prices and free-plan limits unchanged.",
+        "Kit month-to-month prices are now read directly from Kit's pricing page (monthly billing view) instead of being calculated from the yearly saving Kit states. That corrects 12 month-to-month values, each $1 lower: Creator at 3,000: $60 → $59; Creator at 5,000: $90 → $89; Creator at 8,000: $120 → $119; Creator at 20,000: $190 → $189; Pro at 3,000: $100 → $99; Pro at 10,000: $190 → $189; Pro at 15,000: $250 → $249; Pro at 20,000: $270 → $269; Pro at 25,000: $280 → $279; Pro at 35,000: $364 → $363; Pro at 45,000: $448 → $447; Pro at 55,000: $520 → $519.",
+        "beehiiv Pro at 250,000 subscribers added: $869/mo yearly, $999/mo month to month (tier not recorded before; existing beehiiv prices unchanged).",
+        "Affiliate programs re-checked (Kit, beehiiv, systeme.io): no changes."
+      ]
+    },
     {
       "date": "2026-11-08",
       "changes": [
