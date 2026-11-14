@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="8OATEkWut0D8qP_lGnY6NPHhcCzGoT8kGBMH8Hik5fw">
+<title>Newsletter Platform Cost Calculator (Kit, beehiiv, Substack, Ghost, MailerLite)</title>
+<meta name="description" content="Compare the real monthly cost of Kit, beehiiv, Substack, Ghost, MailerLite and systeme.io at your list size, including paid-subscription fees. Prices verified 2026-11-14.">
+<link rel="canonical" href="https://diveman4.github.io/newsletter-cost-lab/">
+<meta property="og:title" content="Newsletter Platform Cost Calculator (Kit, beehiiv, Substack, Ghost, MailerLite)">
+<meta property="og:description" content="Compare the real monthly cost of Kit, beehiiv, Substack, Ghost, MailerLite and systeme.io at your list size, including paid-subscription fees. Prices verified 2026-11-14.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://diveman4.github.io/newsletter-cost-lab/">
+<style>:root{--ink:#1d2330;--muted:#5d6675;--line:#e3e6ec;--bg:#fafbfc;--card:#fff;--accent:#2457d6;--good:#1d7a46}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+.top{background:#fff;border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:12px 18px}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:1.05rem}
+nav{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.92rem}
+nav a{color:var(--muted);text-decoration:none}nav a:hover{color:var(--accent)}
+a{color:var(--accent)}
+h1{font-size:1.7rem;line-height:1.25;margin:28px 0 10px}
+h2{font-size:1.25rem;margin:32px 0 8px}
+.lede{color:var(--muted);font-size:1.05rem}
+.disc{background:#fff8e6;border:1px solid #f1dfae;border-radius:8px;padding:8px 12px;font-size:.88rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label{display:flex;flex-direction:column;font-size:.88rem;color:var(--muted);gap:4px}
+input,select{font:inherit;padding:9px 10px;border:1px solid #cfd4dc;border-radius:8px;background:#fff;color:var(--ink)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:#fff}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+thead th{background:#f2f4f7;font-size:.85rem}
+.grid-table td small{display:block;color:var(--muted);font-size:.76rem}
+td.na{color:#9aa1ad}
+.res th:first-child,.res td:first-child{white-space:nowrap}
+.res tr.best td{background:#effaf3}
+.res .total{font-weight:700}
+.fine{font-size:.82rem;color:var(--muted)}
+sup.aff{color:var(--muted);margin-left:1px}
+.foot{border-top:1px solid var(--line);margin-top:40px;padding-top:12px;font-size:.85rem;color:var(--muted)}
+@media(max-width:600px){h1{font-size:1.4rem}th,td{padding:7px 8px}}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Newsletter platform cost calculator", "applicationCategory": "BusinessApplication", "operatingSystem": "Any", "url": "https://diveman4.github.io/newsletter-cost-lab/", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "dateModified": "2026-11-14"}</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html">Newsletter Cost Lab</a>
+<nav><a href="index.html">Cost calculator</a><a href="free-plans.html">Free plans</a><a href="substack-fees.html">Substack fees</a><a href="guides/choose-your-first-newsletter-platform.html">Beginner guide</a><a href="methodology.html">How we verify</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1>What will your newsletter platform actually cost?</h1>
+<p class="lede">Enter your list size and, if you charge readers, your paid subscribers. The calculator picks the cheapest plan on each platform that can hold your list, then adds the platform's cut and card-processing fees. Every price comes from the vendor's own pricing page, checked on 2026-11-14.</p>
+<p class="disc">Links marked * are affiliate links: if you buy through them we may earn a commission, at no extra cost to you. It never changes the numbers. <a href="disclosure.html">Details</a>.</p>
+<section class="card" id="calc">
+<div class="grid">
+<label>Email subscribers<input id="subs" type="number" min="0" step="100" value="1000" inputmode="numeric"></label>
+<label>Paid subscribers<input id="paid" type="number" min="0" step="10" value="0" inputmode="numeric"></label>
+<label>Price per paid subscriber ($/month)<input id="price" type="number" min="0" step="1" value="8" inputmode="decimal"></label>
+<label>Billing<select id="billing"><option value="annual">Pay yearly (monthly equivalent)</option><option value="monthly">Pay month to month</option></select></label>
+</div>
+<div id="result" aria-live="polite"><noscript><p>The calculator needs JavaScript. The static table below has the same numbers for free newsletters.</p></noscript></div>
+<p class="fine">Fees assume one card payment per paid subscriber per month at Stripe's standard US rate (2.9% + $0.30). Kit uses its own 3.5% + $0.30 transaction fee instead. Taxes, currency conversion and app-store purchases are not included.</p>
+</section>
+
+<h2>Cheapest option for a free newsletter</h2>
+<p>For a newsletter you don't charge for (no paid subscriptions), billed yearly, the lowest monthly price in our data is:</p>
+<ul><li><strong>500 subscribers:</strong> Kit Free at $0/mo (free)</li><li><strong>1,000 subscribers:</strong> Kit Free at $0/mo (free)</li><li><strong>2,500 subscribers:</strong> Kit Free at $0/mo (free)</li><li><strong>5,000 subscribers:</strong> Kit Free at $0/mo (free)</li><li><strong>10,000 subscribers:</strong> Kit Free at $0/mo (free)</li><li><strong>25,000 subscribers:</strong> systeme.io Unlimited at $80.83/mo</li><li><strong>50,000 subscribers:</strong> systeme.io Unlimited at $80.83/mo</li></ul>
+<p>Substack is $0 at any size but takes 10% once you charge readers. See <a href="substack-fees.html">when Substack's cut overtakes a flat plan</a>.</p>
+
+<h2>Monthly price by list size (free newsletter, yearly billing)</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>500</th><th>1,000</th><th>2,500</th><th>5,000</th><th>10,000</th><th>25,000</th><th>50,000</th></tr></thead><tbody><tr><th><a href="https://partners.kit.com/yne2ghxsgror" rel="sponsored noopener" target="_blank">Kit</a><sup class="aff" title="Affiliate link">*</sup></th><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$166<small>Creator</small></td><td>$316<small>Creator</small></td></tr><tr><th><a href="https://www.beehiiv.com/?via=t-a" rel="sponsored noopener" target="_blank">beehiiv</a><sup class="aff" title="Affiliate link">*</sup></th><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$95<small>Lite</small></td><td>$119<small>Lite</small></td><td>$169<small>Lite</small></td><td>$249<small>Lite</small></td></tr><tr><th><a href="https://www.mailerlite.com/" rel="noopener" target="_blank">MailerLite</a></th><td>$10.80<small>Comfort</small></td><td>$17.10<small>Comfort</small></td><td>$29.70<small>Comfort</small></td><td>$44.10<small>Comfort</small></td><td>$80.10<small>Comfort</small></td><td>$161<small>Comfort</small></td><td>$287<small>Comfort</small></td></tr><tr><th><a href="https://ghost.org/" rel="noopener" target="_blank">Ghost(Pro)</a></th><td>$15<small>Starter</small></td><td>$15<small>Starter</small></td><td>$46<small>Publisher</small></td><td>$63<small>Publisher</small></td><td>$88<small>Publisher</small></td><td>$141<small>Publisher</small></td><td>$208<small>Publisher</small></td></tr><tr><th><a href="https://substack.com/" rel="noopener" target="_blank">Substack</a></th><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$0<small>Free</small></td></tr><tr><th><a href="https://systeme.io/?sa=sa02858447821b35d169c9a1ccc2246204d077f5db" rel="sponsored noopener" target="_blank">systeme.io</a><sup class="aff" title="Affiliate link">*</sup></th><td>$0<small>Free</small></td><td>$0<small>Free</small></td><td>$14.17<small>Startup</small></td><td>$14.17<small>Startup</small></td><td>$39.17<small>Webinar</small></td><td>$80.83<small>Unlimited</small></td><td>$80.83<small>Unlimited</small></td></tr><tr><th><a href="https://buttondown.com/" rel="noopener" target="_blank">Buttondown</a></th><td>$7.50<small>Basic (no add-ons)</small></td><td>$7.50<small>Basic (no add-ons)</small></td><td>$24.17<small>Basic (no add-ons)</small></td><td>$24.17<small>Basic (no add-ons)</small></td><td>$65.83<small>Basic (no add-ons)</small></td><td>$199<small>Basic (no add-ons)</small></td><td>$266<small>Basic (no add-ons)</small></td></tr></tbody></table></div>
+<p class="fine">The cheapest plan that holds the list is used. "–" means the platform has no plan for that size in our data, or the price isn't verified yet. Buttondown prices are its base plan without add-ons (paid subscriptions and other features cost extra).</p>
+
+<h2>Before you pick on price alone</h2>
+<ul>
+<li><strong>Free-plan ceilings differ a lot:</strong> 100 (Buttondown) to 10,000 (Kit) subscribers. See <a href="free-plans.html">the free plan comparison</a>.</li>
+<li><strong>Paid newsletters change the maths.</strong> A percentage cut is cheap when you're small and expensive when you grow.</li>
+<li><strong>Deciding between Kit and beehiiv?</strong> See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a>.</li>
+<li><strong>Switching later has a cost.</strong> Paid subscribers on some platforms can't simply be moved. Pick a platform you can stay on for at least a year.</li>
+</ul>
+
+<h2>Price guides</h2>
+<ul>
+<li><a href="kit-pricing.html">Kit pricing explained</a>: every plan and list size, yearly vs monthly</li>
+<li><a href="beehiiv-pricing.html">beehiiv pricing explained</a>: Free, Lite and Pro at every list size</li>
+<li><a href="mailerlite-pricing.html">MailerLite pricing explained</a>: Free, Comfort and Power at every list size</li>
+<li><a href="cheapest-newsletter-platform-1000-subscribers.html">Cheapest newsletter platform for 1,000 subscribers</a></li>
+<li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
+<li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
+<li><a href="substack-fees.html">Substack fees vs flat-price plans</a></li>
+</ul>
+<script src="assets/calc.js" defer></script>
+
+</main>
+<footer class="wrap foot">
+<p>Prices last verified against each vendor's own pricing page on <strong>2026-11-14</strong>. Vendors change prices without notice. Check the linked pricing page before you buy.</p>
+<p><a href="about.html">About</a> · <a href="disclosure.html">Affiliate disclosure</a> · <a href="changelog.html">Price change log</a> · <a href="contact.html">Contact</a></p>
+</footer>
+</body>
+</html>

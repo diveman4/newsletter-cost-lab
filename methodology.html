@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="8OATEkWut0D8qP_lGnY6NPHhcCzGoT8kGBMH8Hik5fw">
+<title>How We Verify Newsletter Platform Prices</title>
+<meta name="description" content="Our method for checking newsletter platform prices and the fixed-task tests we run on each platform.">
+<link rel="canonical" href="https://diveman4.github.io/newsletter-cost-lab/methodology.html">
+<meta property="og:title" content="How We Verify Newsletter Platform Prices">
+<meta property="og:description" content="Our method for checking newsletter platform prices and the fixed-task tests we run on each platform.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://diveman4.github.io/newsletter-cost-lab/methodology.html">
+<style>:root{--ink:#1d2330;--muted:#5d6675;--line:#e3e6ec;--bg:#fafbfc;--card:#fff;--accent:#2457d6;--good:#1d7a46}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+.top{background:#fff;border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:12px 18px}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;font-size:1.05rem}
+nav{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.92rem}
+nav a{color:var(--muted);text-decoration:none}nav a:hover{color:var(--accent)}
+a{color:var(--accent)}
+h1{font-size:1.7rem;line-height:1.25;margin:28px 0 10px}
+h2{font-size:1.25rem;margin:32px 0 8px}
+.lede{color:var(--muted);font-size:1.05rem}
+.disc{background:#fff8e6;border:1px solid #f1dfae;border-radius:8px;padding:8px 12px;font-size:.88rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label{display:flex;flex-direction:column;font-size:.88rem;color:var(--muted);gap:4px}
+input,select{font:inherit;padding:9px 10px;border:1px solid #cfd4dc;border-radius:8px;background:#fff;color:var(--ink)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:#fff}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+thead th{background:#f2f4f7;font-size:.85rem}
+.grid-table td small{display:block;color:var(--muted);font-size:.76rem}
+td.na{color:#9aa1ad}
+.res th:first-child,.res td:first-child{white-space:nowrap}
+.res tr.best td{background:#effaf3}
+.res .total{font-weight:700}
+.fine{font-size:.82rem;color:var(--muted)}
+sup.aff{color:var(--muted);margin-left:1px}
+.foot{border-top:1px solid var(--line);margin-top:40px;padding-top:12px;font-size:.85rem;color:var(--muted)}
+@media(max-width:600px){h1{font-size:1.4rem}th,td{padding:7px 8px}}
+</style>
+
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html">Newsletter Cost Lab</a>
+<nav><a href="index.html">Cost calculator</a><a href="free-plans.html">Free plans</a><a href="substack-fees.html">Substack fees</a><a href="guides/choose-your-first-newsletter-platform.html">Beginner guide</a><a href="methodology.html">How we verify</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1>How we verify prices (and how we'll test platforms)</h1>
+<h2>Price verification</h2>
+<ol>
+<li>Prices are read from each vendor's own public pricing page, at every list size the page's own slider offers, for both yearly and monthly billing where shown.</li>
+<li>Each price is stored with the date it was checked. The current data was checked on <strong>2026-11-14</strong>.</li>
+<li>Where a vendor only states a discount (for example "2 months free" on yearly billing), we calculate the other price and say so.</li>
+<li>Where we couldn't verify a number, we show "–" instead of guessing.</li>
+<li>Prices are re-checked regularly, and every change is recorded in the <a href="changelog.html">price change log</a>.</li>
+</ol>
+<p>Sources used:</p><ul><li>Kit: <a href='https://kit.com/pricing' rel='noopener' target='_blank'>https://kit.com/pricing</a></li><li>beehiiv: <a href='https://www.beehiiv.com/pricing' rel='noopener' target='_blank'>https://www.beehiiv.com/pricing</a></li><li>MailerLite: <a href='https://www.mailerlite.com/pricing' rel='noopener' target='_blank'>https://www.mailerlite.com/pricing</a></li><li>Ghost(Pro): <a href='https://ghost.org/pricing/' rel='noopener' target='_blank'>https://ghost.org/pricing/</a></li><li>Substack: <a href='https://substack.com/' rel='noopener' target='_blank'>https://substack.com/</a></li><li>systeme.io: <a href='https://systeme.io/pricing' rel='noopener' target='_blank'>https://systeme.io/pricing</a></li><li>Buttondown: <a href='https://buttondown.com/pricing' rel='noopener' target='_blank'>https://buttondown.com/pricing</a></li></ul>
+<h2 id="lab">Fixed-task platform tests (coming soon)</h2>
+<p>Price is only half of the decision. We're preparing a repeatable test that runs the same tasks on each platform's free plan, with the same inputs, and publishes the raw results:</p>
+<ol>
+<li>Time to go from sign-up to a sent first issue.</li>
+<li>Build and embed a sign-up form on a test page.</li>
+<li>Send an identical issue to a fixed set of test inboxes (Gmail, Outlook, Yahoo) and record inbox, promotions or spam placement.</li>
+<li>Import and export a test list of 100 addresses, and check what's kept.</li>
+<li>Set up a 3-email welcome sequence where the free plan allows it.</li>
+</ol>
+<p>Results will be dated, repeated on a schedule, and published with what went wrong as well as what worked. We won't claim to have tested anything until a test has actually been run.</p>
+
+</main>
+<footer class="wrap foot">
+<p>Prices last verified against each vendor's own pricing page on <strong>2026-11-14</strong>. Vendors change prices without notice. Check the linked pricing page before you buy.</p>
+<p><a href="about.html">About</a> · <a href="disclosure.html">Affiliate disclosure</a> · <a href="changelog.html">Price change log</a> · <a href="contact.html">Contact</a></p>
+</footer>
+</body>
+</html>
