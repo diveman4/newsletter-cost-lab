@@ -55,7 +55,7 @@
    "not_indexed_count": 0,
    "not_indexed_note": "Reason table lists 'Crawled - currently not indexed' (Google systems) but its URL list is empty; summary shows 0 not indexed."
   },
-  "sitemap": "/sitemap.xml: status 'Couldn't fetch' (submitted 2026-11-08, no last-read date), 0 discovered pages. Live sitemap returns 200 application/xml.",
+  "sitemap": "/sitemap.xml: status 'Couldn't fetch' (submitted 2026-11-08, no last-read date), 0 discovered pages. Live sitemap returns 200 application/xml. 2026-11-15: TA resubmitted /sitemap.xml (status still 'Couldn't fetch' right after resubmission).",
   "comparison_vs_last_week": "Last week: no performance data, 2 pages indexed. This week: 5 impressions, 0 clicks, avg position 34.2; 5 pages indexed.",
   "actions": "Read-only check by Claude. 2026-11-15: TA manually requested indexing for /cheapest-newsletter-platform-1000-subscribers.html and /mailerlite-pricing.html (sitemap resubmission optional, suggested to TA).",
   "indexing_requested": [
@@ -68,6 +68,16 @@
     "url": "/mailerlite-pricing.html",
     "date": "2026-11-15",
     "by": "TA"
+   },
+   {
+    "url": "/ghost-pricing.html",
+    "date": "2026-11-15",
+    "by": "Claude"
+   },
+   {
+    "url": "/cheapest-newsletter-platform-5000-subscribers.html",
+    "date": "2026-11-15",
+    "by": "Claude"
    }
   ]
  },
