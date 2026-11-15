@@ -182,7 +182,9 @@ def build(base):
 <li><a href="kit-pricing.html">Kit pricing explained</a>: every plan and list size, yearly vs monthly</li>
 <li><a href="beehiiv-pricing.html">beehiiv pricing explained</a>: Free, Lite and Pro at every list size</li>
 <li><a href="mailerlite-pricing.html">MailerLite pricing explained</a>: Free, Comfort and Power at every list size</li>
+<li><a href="ghost-pricing.html">Ghost(Pro) pricing explained</a>: Starter, Publisher and Business at every list size</li>
 <li><a href="cheapest-newsletter-platform-1000-subscribers.html">Cheapest newsletter platform for 1,000 subscribers</a></li>
+<li><a href="cheapest-newsletter-platform-5000-subscribers.html">Cheapest newsletter platform for 5,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
 <li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
 <li><a href="substack-fees.html">Substack fees vs flat-price plans</a></li>
@@ -456,6 +458,7 @@ def build(base):
 <ul>
 <li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
 <li><a href="cheapest-newsletter-platform-1000-subscribers.html">Cheapest newsletter platform for 1,000 subscribers</a></li>
+<li><a href="cheapest-newsletter-platform-5000-subscribers.html">Cheapest newsletter platform for 5,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
 <li><a href="free-plans.html">Free plans compared</a></li>
 <li><a href="changelog.html">Price change log</a></li>
@@ -468,6 +471,15 @@ def build(base):
     pricing_page("kit", "kit-pricing.html")
     pricing_page("beehiiv", "beehiiv-pricing.html")
     pricing_page("mailerlite", "mailerlite-pricing.html")
+    _g = P["ghost"]
+    _g_nopaid = [pl["name"] for pl in _g["plans"] if not pl["paid_subscriptions"]]
+    _g_paid = [pl["name"] for pl in _g["plans"] if pl["paid_subscriptions"]]
+    _g_start = next(pl for pl in _g["plans"] if pl["name"] == "Starter")
+    pricing_page("ghost", "ghost-pricing.html",
+                 f"Starter is listed up to {_g_start['tiers'][-1][0]:,} members only. "
+                 f"Paid memberships need {' or '.join(_g_paid)}; {', '.join(_g_nopaid)} does not include them. "
+                 f"Ghost's pricing page shows the Business price below {_g['plans'][-1]['tiers'][0][0]:,} members at its {_g['plans'][-1]['tiers'][0][0]:,}-member rate. "
+                 "Self-hosting Ghost is free software but you pay for and run your own server, which isn't priced here.")
 
     # ---- cheapest at 10,000 subscribers
     def rank_rows(s, paid=0, price=0, billing="annual", include_substack=True):
@@ -522,7 +534,7 @@ def build(base):
 <ul>
 <li><strong>Free newsletter:</strong> {free_txt}</li>
 <li><strong>Paid newsletter</strong> ({paid_n} readers paying ${paid_price}/month): {html.escape(best_paid[0]['name'])} {html.escape(best_paid[1]['plan'])} is cheapest at {money(best_paid[1]['total'])}/month including fees.</li>
-<li><strong>Growing past {S:,}?</strong> At {over:,} subscribers the cheapest option becomes {over_txt}. {over_note}</li>
+<li><strong>Growing past {S:,}?</strong> At {over:,} subscribers the cheapest option is {over_txt}. {over_note}</li>
 </ul>
 
 <h2>Free newsletter at {S:,} subscribers, yearly billing</h2>
@@ -539,16 +551,20 @@ def build(base):
 <h2>If you'll pass {S:,} soon: prices at {over:,}</h2>
 <div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(over_y)}</tbody></table></div>
 <p class="fine">Free newsletter, yearly billing. Free plans have hard subscriber caps and paid plans are priced in tiers, so a few hundred extra subscribers can move you into the next price band.</p>
-<p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {' and '.join(f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S)} subscribers. Only comparing two platforms? See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
+<p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {names_and([f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S])} subscribers. Only comparing two platforms? See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
 <p>We haven't run hands-on tests of these platforms yet, so this ranking covers published prices only.</p>
 """
         pages.append((f"cheapest-newsletter-platform-{S}-subscribers.html", f"Cheapest Newsletter Platform for {S:,} Subscribers (" + DATA["verified_on"][:4] + ")",
                       f"Every newsletter platform ranked by monthly cost at {S:,} subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
 
-    CHEAPEST_SIZES = [1000, 10000]
+    CHEAPEST_SIZES = [1000, 5000, 10000]
     cheapest_page(1000, 3000, 50, 8,
                   "1,000 subscribers is a common first-year goal, and at this size several platforms are still free.",
                   f"Free plans on beehiiv (up to {P['beehiiv']['free_plan']['max_subscribers']:,}) and systeme.io (up to {P['systemeio']['free_plan']['max_subscribers']:,}) stop before that, while Kit's goes to {P['kit']['free_plan']['max_subscribers']:,}, so check where you expect to be in a year.")
+    _sys_start = P["systemeio"]["plans"][0]
+    cheapest_page(5000, 6000, 250, 8,
+                  "5,000 subscribers is past most free plans, so this is often the first list size where you start paying.",
+                  f"systeme.io {_sys_start['name']} covers up to {_sys_start['tiers'][0][0]:,} contacts, so a slightly bigger list moves you to its next plan.")
     cheapest_page(10000, 12000, 500, 8,
                   "10,000 subscribers is where many free plans end and prices start to climb.",
                   "Check the next tier before you commit.")
