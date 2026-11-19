@@ -107,6 +107,15 @@ def platform_link(p, label=None, rel_prefix=""):
     return f'<a href="{html.escape(p["official_url"])}" rel="noopener" target="_blank">{label}</a>'
 
 
+def cta(p, verified):
+    """A clearly labelled button to the vendor. Uses the affiliate link only where one is set (marked *)."""
+    if p.get("affiliate_url"):
+        return (f'<p class="cta"><a class="btn" href="{html.escape(p["affiliate_url"])}" rel="sponsored noopener" target="_blank">Visit {html.escape(p["name"])} &rarr;</a>'
+                f'<sup class="aff" title="Affiliate link">*</sup> <span class="fine">Affiliate link. Opens {html.escape(p["name"])}\'s website. Our prices were checked {verified}; confirm the current price there.</span></p>')
+    return (f'<p class="cta"><a class="btn" href="{html.escape(p["pricing_url"])}" rel="noopener" target="_blank">See {html.escape(p["name"])}\'s pricing page &rarr;</a> '
+            f'<span class="fine">Our prices were checked {verified}; confirm the current price there.</span></p>')
+
+
 def any_affiliate():
     return any(p.get("affiliate_url") for p in DATA["platforms"])
 
@@ -189,6 +198,7 @@ def build(base):
 <li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-25000-subscribers.html">Cheapest newsletter platform for 25,000 subscribers</a></li>
 <li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
+<li><a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost at every list size</a></li>
 <li><a href="substack-fees.html">Substack fees vs flat-price plans</a></li>
 </ul>
 <script src="assets/calc.js" defer></script>
@@ -379,10 +389,84 @@ def build(base):
 <li>Kit sometimes runs a first-year discount on Pro. The tables use the standard price.</li>
 <li>Both vendors change prices from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
 </ul>
+<p>Also compare: <a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="beehiiv-pricing.html">beehiiv pricing</a>.</p>
 <p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
 """
     pages.append(("kit-vs-beehiiv-cost.html", "Kit vs beehiiv Cost at Every List Size (" + DATA["verified_on"][:4] + ")",
                   "Kit vs beehiiv prices side by side from 1,000 to 50,000 subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
+
+    # ---- MailerLite vs Kit (all numbers computed from platforms.json)
+    ml = P["mailerlite"]
+    mk_sizes = [500, 1000, 2500, 5000, 8000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000]
+    mk_sizes = [s for s in mk_sizes if "total" in cost(ml, s) and "total" in cost(kit, s)]
+
+    def mk_winner(a, b):
+        if a["total"] == b["total"]:
+            return "Same"
+        return "MailerLite" if a["total"] < b["total"] else "Kit"
+
+    def mk_rows(billing):
+        r = ""
+        for s in mk_sizes:
+            a, b = cost(ml, s, billing=billing), cost(kit, s, billing=billing)
+            r += f"<tr><td>{s:,}</td><td>{cell(a)}</td><td>{cell(b)}</td><td>{mk_winner(a, b)}</td></tr>"
+        return r
+
+    mk_y = [(s, cost(ml, s), cost(kit, s)) for s in mk_sizes]
+    kit_free_sizes = [s for s, a, b in mk_y if b["total"] == 0]
+    above = [(s, a, b) for s, a, b in mk_y if b["total"] > 0]
+    ml_wins = [s for s, a, b in above if a["total"] < b["total"]]
+    kit_wins = [s for s, a, b in above if b["total"] < a["total"]]
+    gap = max(abs(a["total"] - b["total"]) for s, a, b in above) if above else 0
+    ml_first = ml["plans"][0]
+    mk_pair = ""
+    for s in mk_sizes:
+        vals = [plan_price(ml, "Comfort", s, 1), plan_price(kit, "Creator", s, 1), plan_price(ml, "Power", s, 1), plan_price(kit, "Pro", s, 1)]
+        mk_pair += f"<tr><td>{s:,}</td>" + "".join(f"<td>{money(v) if v is not None else '–'}</td>" for v in vals) + "</tr>"
+    def _and(xs):
+        xs = list(xs)
+        return "" if not xs else (xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1])
+    above_txt = ""
+    if above:
+        above_txt = (f"<li><strong>Above {kit_free:,} subscribers</strong> both are paid and, with yearly billing, the prices are close (at most {money(gap)} a month apart in our table). "
+                     f"The cheaper one switches with each vendor's price tiers (yearly billing; see the month-to-month table too): MailerLite at {_and(f'{s:,}' for s in ml_wins) or 'none'}; "
+                     f"Kit at {_and(f'{s:,}' for s in kit_wins) or 'none'} subscribers.</li>")
+    body = f"""
+<h1>MailerLite vs Kit: what each costs at every list size</h1>
+<p class="lede">MailerLite and Kit (formerly ConvertKit) are both email tools many people start a newsletter with. This page puts their published prices side by side from {mk_sizes[0]:,} to {mk_sizes[-1]:,} subscribers, using each vendor's own pricing page, checked on {DATA['verified_on']}.</p>
+{disclosure_box('')}
+<h2>The short version</h2>
+<ul>
+<li><strong>Up to {kit_free:,} subscribers:</strong> Kit's free plan covers the list, so a free newsletter costs $0 on Kit. MailerLite's free plan stops at {ml['free_plan']['max_subscribers']:,} subscribers; above that its cheapest plan is {html.escape(ml_first['name'])}, from {money(ml_first['tiers'][0][1])}/month billed yearly.</li>
+{above_txt}
+<li><strong>Charging readers:</strong> Kit allows paid subscriptions on every plan, including Free, with a {kfm['pct']}% + ${kfm['fixed']:.2f} transaction fee. MailerLite's paid-newsletter costs aren't in our data yet, so this page compares free newsletters only.</li>
+<li><strong>Free plans aren't equal:</strong> Kit: {html.escape(kit['free_plan']['summary'])} MailerLite: {html.escape(ml['free_plan']['summary'])}</li>
+</ul>
+
+<h2>Free newsletter, yearly billing (monthly equivalent)</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{platform_link(ml)}</th><th>{platform_link(kit)}</th><th>Cheaper</th></tr></thead><tbody>{mk_rows('annual')}</tbody></table></div>
+
+<h2>Free newsletter, month-to-month billing</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>MailerLite</th><th>Kit</th><th>Cheaper</th></tr></thead><tbody>{mk_rows('monthly')}</tbody></table></div>
+<p class="fine">The cheapest plan that holds the list is used for each platform. Both vendors price in tiers, so the subscriber counts above are tier limits: a list slightly over one moves to the next price.</p>
+
+<h2>Plan against plan, yearly billing</h2>
+<p>If you already know you want a paid plan (for example for automations), these are each vendor's two main plans side by side:</p>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>MailerLite Comfort</th><th>Kit Creator</th><th>MailerLite Power</th><th>Kit Pro</th></tr></thead><tbody>{mk_pair}</tbody></table></div>
+<p class="fine">{html.escape(kit_pro_note)} Plan features differ, so compare what each plan includes on the vendor's pricing page before choosing on price.</p>
+<div class="ctas">{cta(ml, DATA['verified_on'])}{cta(kit, DATA['verified_on'])}</div>
+
+<h2>Things the price tables don't show</h2>
+<ul>
+<li>The free plans differ in more than list size: see each one's limits in the short version above, and on <a href="free-plans.html">free plans compared</a>.</li>
+<li>Kit sometimes runs a first-year discount on Pro. The tables use the standard price.</li>
+<li>Prices change from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
+</ul>
+<p>More detail: <a href="mailerlite-pricing.html">MailerLite pricing</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>, or run your own numbers in the <a href="index.html">cost calculator</a>.</p>
+<p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
+"""
+    pages.append(("mailerlite-vs-kit-cost.html", "MailerLite vs Kit (ConvertKit) Pricing Compared at Every List Size (" + DATA["verified_on"][:4] + ")",
+                  f"MailerLite vs Kit prices side by side from {mk_sizes[0]:,} to {mk_sizes[-1]:,} subscribers, yearly and monthly, using prices verified " + DATA["verified_on"] + ".", body, None))
 
     # ---- single-platform pricing pages (all numbers from platforms.json)
     def tier_price(plan, s, idx):
@@ -443,10 +527,27 @@ def build(base):
             notes += " " + html.escape(p["annual_note"])
         year = DATA["verified_on"][:4]
         plan_names = ", ".join(pl["name"] for pl in p["plans"])
+        fm_name = f" (formerly {p['formerly']})" if p.get("formerly") else ""
+        if fp["max_subscribers"] is None:
+            q_free = "It's free at any list size."
+        elif fp["max_subscribers"] == 0:
+            q_free = f"There's no free plan."
+        else:
+            q_free = f"It's free up to {fp['max_subscribers']:,} {unit}."
+        q_at = []
+        for qs in (10000, 25000):
+            qc = cost(p, qs)
+            if "total" in qc:
+                q_at.append(f"at {qs:,} {unit} the cheapest option is {money(qc['total'])}/month ({html.escape(qc['plan'])})")
+        q_at_txt = (" With yearly billing, " + " and ".join(q_at) + ".") if q_at else ""
+        answer = (f'<div class="answer"><p><strong>How much does {html.escape(p["name"])} cost?</strong> {q_free} '
+                  f'Paid plans start at {money(e_y)}/month billed yearly ({money(e_m)} month to month) for up to {entry["tiers"][0][0]:,} {unit}.{q_at_txt}</p></div>')
         body = f"""
-<h1>{html.escape(p['name'])} pricing explained: what you'll pay at every list size</h1>
+<h1>{html.escape(p['name'])}{html.escape(fm_name)} pricing explained: what you'll pay at every list size</h1>
 <p class="lede">{html.escape(p['name'])} prices depend on how many {unit} you have and on whether you pay yearly or monthly. This page lists every price on {html.escape(p['name'])}'s own <a href="{html.escape(p['pricing_url'])}" rel="noopener" target="_blank">pricing page</a>, checked on {DATA['verified_on']}.</p>
 {disclosure_box('')}
+{answer}
+{cta(p, DATA['verified_on'])}
 <h2>The short version</h2>
 <ul>
 <li><strong>Free plan:</strong> {html.escape(fp['summary'])} {"You can charge readers on the free plan." if fp["paid_subscriptions"] else ("Paid subscriptions need a paid plan." if fm["type"] != "not_compared" else "")}</li>
@@ -461,9 +562,11 @@ def build(base):
 <p>For a free newsletter on yearly billing, here is {html.escape(p['name'])}'s cheapest option next to the cheapest option on any other platform we track (Substack excluded, since it's free until you charge):</p>
 <div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{platform_link(p)}</th><th>Cheapest elsewhere</th></tr></thead><tbody>{cmp_rows}</tbody></table></div>
 <p class="fine">Plans differ in features, so the cheapest price isn't automatically the best fit. Run your own numbers, including paid subscribers, in the <a href="index.html">cost calculator</a>.</p>
+{cta(p, DATA['verified_on'])}
 <h2>Related</h2>
 <ul>
 <li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
+<li><a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost at every list size</a></li>
 <li><a href="cheapest-newsletter-platform-1000-subscribers.html">Cheapest newsletter platform for 1,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-5000-subscribers.html">Cheapest newsletter platform for 5,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
@@ -474,8 +577,8 @@ def build(base):
 </ul>
 <p>We haven't run hands-on tests of {html.escape(p['name'])} yet, so this page covers published prices and limits only.</p>
 """
-        pages.append((fname, f"{p['name']} Pricing {year}: Every Plan and List Size Explained",
-                      f"{p['name']} pricing at every subscriber count: free plan limit, {plan_names} prices on yearly and monthly billing, and paid-newsletter fees. Verified {DATA['verified_on']}.", body, None))
+        pages.append((fname, f"{p['name']} Pricing {year}{fm_name}: Every Plan and List Size Explained",
+                      f"{p['name']}{fm_name} pricing at every subscriber count: free plan limit, {plan_names} prices on yearly and monthly billing, and paid-newsletter fees. Verified {DATA['verified_on']}.", body, None))
 
     pricing_page("kit", "kit-pricing.html")
     pricing_page("beehiiv", "beehiiv-pricing.html")
@@ -570,7 +673,7 @@ def build(base):
 <h2>If you'll pass {S:,} soon: prices at {over:,}</h2>
 <div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(over_y)}</tbody></table></div>
 <p class="fine">Free newsletter, yearly billing. Free plans have hard subscriber caps and paid plans are priced in tiers, so a few hundred extra subscribers can move you into the next price band.</p>
-<p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {names_and([f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S])} subscribers. Only comparing two platforms? See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>. Single-platform price guides: {", ".join(f'<a href="{g}">{html.escape(t.replace(" pricing explained", ""))}</a>' for g, t in PRICING_GUIDES)}. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
+<p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {names_and([f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S])} subscribers. Only comparing two platforms? See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a> or <a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit</a>. Single-platform price guides: {", ".join(f'<a href="{g}">{html.escape(t.replace(" pricing explained", ""))}</a>' for g, t in PRICING_GUIDES)}. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
 <p>We haven't run hands-on tests of these platforms yet, so this ranking covers published prices only.</p>
 """
         pages.append((f"cheapest-newsletter-platform-{S}-subscribers.html", f"Cheapest Newsletter Platform for {S:,} Subscribers (" + DATA["verified_on"][:4] + ")",

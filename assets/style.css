@@ -28,4 +28,7 @@ td.na{color:#9aa1ad}
 .fine{font-size:.82rem;color:var(--muted)}
 sup.aff{color:var(--muted);margin-left:1px}
 .foot{border-top:1px solid var(--line);margin-top:40px;padding-top:12px;font-size:.85rem;color:var(--muted)}
+.answer{background:#eef3ff;border:1px solid #cfdcfb;border-radius:10px;padding:10px 14px;margin:14px 0}.answer p{margin:0}
+.cta{margin:16px 0;line-height:2}.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:9px 16px;border-radius:8px;line-height:1.4}.btn:hover{background:#1b46b0}
+.ctas .cta{margin:10px 0}
 @media(max-width:600px){h1{font-size:1.4rem}th,td{padding:7px 8px}}
