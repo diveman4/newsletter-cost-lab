@@ -172,10 +172,42 @@
       "not_indexed_count": 0,
       "not_indexed_note": "Summary shows 0 not indexed; reason table lists 'Crawled - currently not indexed' (Google systems) with 1 page but no URL list. Pages not yet in the indexed list are mostly ones requested 2026-11-15 to 11-19 or not yet discovered."
     },
-    "sitemap": "/sitemap.xml: status 'Couldn't fetch' (取得できませんでした), submitted 2026-11-15, no last-read date, 0 discovered pages.",
+    "sitemap": "/sitemap.xml: status 'Couldn't fetch' (取得できませんでした), submitted 2026-11-15, no last-read date, 0 discovered pages. 2026-11-21: Claude resubmitted sitemap.xml (live sitemap returns 200 application/xml with 22 URLs); right after resubmission the submitted date shows 2026/11/21 and status is still 'Couldn't fetch'.",
     "comparison_vs_last_week": "Impressions 7d: 5 -> 43 (28d: 54). Clicks still 0. Avg position 34.2 -> 48.8 (more queries, mostly at positions 30-90). Indexed pages 5 -> 7 (mailerlite-pricing and ghost-pricing newly indexed, both requested 2026-11-15). MailerLite and Ghost queries appeared for the first time.",
-    "actions": "Prices re-checked, no changes. Added ghost-vs-beehiiv-cost.html (Ghost queries: ghost pricing/ghost pro/ghost subscription) and mailerlite-vs-beehiiv-cost.html (query 'mailerlite pricing comparison'). No title changes: no query reached position <20.",
-    "indexing_requested": []
+    "actions": "Prices re-checked, no changes. Added ghost-vs-beehiiv-cost.html (Ghost queries: ghost pricing/ghost pro/ghost subscription) and mailerlite-vs-beehiiv-cost.html (query 'mailerlite pricing comparison'). No title changes: no query reached position <20. Indexing requested by Claude for 5 URLs (all inspected as 'URL is not on Google' first).",
+    "indexing_requested": [
+      {
+        "url": "/ghost-vs-beehiiv-cost.html",
+        "date": "2026-11-21",
+        "by": "Claude"
+      },
+      {
+        "url": "/mailerlite-vs-beehiiv-cost.html",
+        "date": "2026-11-21",
+        "by": "Claude"
+      },
+      {
+        "url": "/cheapest-newsletter-platform-10000-subscribers.html",
+        "date": "2026-11-21",
+        "by": "Claude"
+      },
+      {
+        "url": "/free-plans.html",
+        "date": "2026-11-21",
+        "by": "Claude"
+      },
+      {
+        "url": "/methodology.html",
+        "date": "2026-11-21",
+        "by": "Claude"
+      }
+    ],
+    "indexing_not_requested_yet": [
+      "/changelog.html",
+      "/about.html",
+      "/disclosure.html",
+      "/contact.html"
+    ]
   },
   {
     "date": "2026-11-14",
