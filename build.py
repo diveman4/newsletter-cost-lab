@@ -137,6 +137,14 @@ def build(base):
         json.dump(DATA, f)
     P = {p["id"]: p for p in DATA["platforms"]}
     pages = []
+    PRICING_GUIDES = [("kit-pricing.html", "Kit pricing explained"), ("beehiiv-pricing.html", "beehiiv pricing explained"),
+                      ("mailerlite-pricing.html", "MailerLite pricing explained"), ("ghost-pricing.html", "Ghost(Pro) pricing explained"),
+                      ("systemeio-pricing.html", "systeme.io pricing explained")]
+
+    COMPARISONS = [("kit-vs-beehiiv-cost.html", "Kit vs beehiiv"), ("mailerlite-vs-kit-cost.html", "MailerLite vs Kit"),
+                   ("ghost-vs-beehiiv-cost.html", "Ghost(Pro) vs beehiiv"), ("mailerlite-vs-beehiiv-cost.html", "MailerLite vs beehiiv"),
+                   ("substack-fees.html", "Substack vs beehiiv and Ghost (fees)")]
+
 
     # ---- index: calculator + cheapest table
     sizes = [500, 1000, 2500, 5000, 10000, 25000, 50000]
@@ -199,6 +207,8 @@ def build(base):
 <li><a href="cheapest-newsletter-platform-25000-subscribers.html">Cheapest newsletter platform for 25,000 subscribers</a></li>
 <li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
 <li><a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost at every list size</a></li>
+<li><a href="ghost-vs-beehiiv-cost.html">Ghost(Pro) vs beehiiv cost for free and paid newsletters</a></li>
+<li><a href="mailerlite-vs-beehiiv-cost.html">MailerLite vs beehiiv cost at every list size</a></li>
 <li><a href="substack-fees.html">Substack fees vs flat-price plans</a></li>
 </ul>
 <script src="assets/calc.js" defer></script>
@@ -389,7 +399,7 @@ def build(base):
 <li>Kit sometimes runs a first-year discount on Pro. The tables use the standard price.</li>
 <li>Both vendors change prices from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
 </ul>
-<p>Also compare: <a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="beehiiv-pricing.html">beehiiv pricing</a>.</p>
+<p>Also compare: <a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost</a>, <a href="ghost-vs-beehiiv-cost.html">Ghost(Pro) vs beehiiv cost</a>, <a href="mailerlite-vs-beehiiv-cost.html">MailerLite vs beehiiv cost</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="beehiiv-pricing.html">beehiiv pricing</a>.</p>
 <p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
 """
     pages.append(("kit-vs-beehiiv-cost.html", "Kit vs beehiiv Cost at Every List Size (" + DATA["verified_on"][:4] + ")",
@@ -462,11 +472,153 @@ def build(base):
 <li>Kit sometimes runs a first-year discount on Pro. The tables use the standard price.</li>
 <li>Prices change from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
 </ul>
-<p>More detail: <a href="mailerlite-pricing.html">MailerLite pricing</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>, or run your own numbers in the <a href="index.html">cost calculator</a>.</p>
+<p>More detail: <a href="mailerlite-pricing.html">MailerLite pricing</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>, <a href="mailerlite-vs-beehiiv-cost.html">MailerLite vs beehiiv</a>, or run your own numbers in the <a href="index.html">cost calculator</a>.</p>
 <p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
 """
     pages.append(("mailerlite-vs-kit-cost.html", "MailerLite vs Kit (ConvertKit) Pricing Compared at Every List Size (" + DATA["verified_on"][:4] + ")",
                   f"MailerLite vs Kit prices side by side from {mk_sizes[0]:,} to {mk_sizes[-1]:,} subscribers, yearly and monthly, using prices verified " + DATA["verified_on"] + ".", body, None))
+
+    # ---- generic two-platform cost comparison (all numbers computed from platforms.json)
+    def pair_page(aid, bid, fname, sizes, plan_pairs, lede, extra_points, paid_share=0.05, paid_price=8, title=None, desc=None):
+        A, B = P[aid], P[bid]
+        sizes = [s for s in sizes if "total" in cost(A, s) or "total" in cost(B, s)]
+
+        def win(a, b):
+            if "total" not in a or "total" not in b:
+                return "–"
+            if a["total"] == b["total"]:
+                return "Same"
+            return A["name"] if a["total"] < b["total"] else B["name"]
+
+        def rows(billing):
+            r = ""
+            for s in sizes:
+                a, b = cost(A, s, billing=billing), cost(B, s, billing=billing)
+                r += f"<tr><td>{s:,}</td><td>{cell(a)}</td><td>{cell(b)}</td><td>{html.escape(win(a, b))}</td></tr>"
+            return r
+
+        def sizes_txt(xs):
+            xs = [f"{s:,}" for s in xs]
+            return "" if not xs else (xs[0] if len(xs) == 1 else ", ".join(xs[:-1]) + " and " + xs[-1])
+
+        yr = [(s, cost(A, s), cost(B, s)) for s in sizes]
+        a_w = [s for s, a, b in yr if win(a, b) == A["name"]]
+        b_w = [s for s, a, b in yr if win(a, b) == B["name"]]
+        free_bits = []
+        if a_w:
+            free_bits.append(f"{html.escape(A['name'])} at {sizes_txt(a_w)}")
+        if b_w:
+            free_bits.append(f"{html.escape(B['name'])} at {sizes_txt(b_w)}")
+        free_line = ("With yearly billing, the cheaper one for a free newsletter is " + "; ".join(free_bits) + " subscribers.") if free_bits else ""
+
+        def fee_desc(p):
+            fm = p["fee_model"]
+            if fm["type"] == "own_processing":
+                return f"{p['name']} charges {fm['pct']}% + ${fm['fixed']:.2f} per transaction"
+            if fm["type"] == "stripe":
+                return f"{p['name']} takes {fm['pct']:g}% (Stripe's {pr['stripe_pct']}% + ${pr['stripe_fixed']:.2f} per payment still applies)"
+            return f"{p['name']}: {fm['label']}"
+
+        def paid_plan_note(p):
+            fp = p["free_plan"]
+            if fp["paid_subscriptions"] and fp["max_subscribers"] != 0:
+                return f"{p['name']} allows them on its free plan"
+            names = [pl["name"] for pl in p["plans"] if pl["paid_subscriptions"]]
+            return f"{p['name']} needs {' or '.join(names)} for them"
+
+        def fees_both():
+            fa, fb = A["fee_model"], B["fee_model"]
+            if fa["type"] == fb["type"] == "stripe" and fa["pct"] == fb["pct"]:
+                return f"Both take {fa['pct']:g}% of paid-subscription revenue; Stripe's {pr['stripe_pct']}% + ${pr['stripe_fixed']:.2f} per payment still applies"
+            return f"{fee_desc(A)}; {fee_desc(B)}"
+
+        comparable = A["fee_model"]["type"] != "not_compared" and B["fee_model"]["type"] != "not_compared"
+        paid_html, paid_line = "", ""
+        if comparable:
+            pr_rows, pa_w, pb_w = "", [], []
+            for s in sizes:
+                n = int(s * paid_share)
+                a, b = cost(A, s, n, paid_price), cost(B, s, n, paid_price)
+                w = win(a, b)
+                (pa_w if w == A["name"] else pb_w if w == B["name"] else []).append(s)
+                pr_rows += f"<tr><td>{s:,}</td><td>{n:,} (${n*paid_price:,}/mo)</td><td>{cell(a)}</td><td>{cell(b)}</td><td>{html.escape(w)}</td></tr>"
+            bits = []
+            if pa_w:
+                bits.append(f"{html.escape(A['name'])} at {sizes_txt(pa_w)}")
+            if pb_w:
+                bits.append(f"{html.escape(B['name'])} at {sizes_txt(pb_w)}")
+            paid_line = (f"<li><strong>Charging readers:</strong> {html.escape(paid_plan_note(A))}; {html.escape(paid_plan_note(B))}. "
+                         f"{html.escape(fees_both())}. In our example ({int(paid_share*100)}% of readers paying ${paid_price}/month), the cheaper one is "
+                         + "; ".join(bits) + " subscribers.</li>")
+            paid_html = f"""
+<h2>Paid newsletter example: {int(paid_share*100)}% of readers pay ${paid_price}/month</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>Paying readers</th><th>{html.escape(A['name'])} total / month</th><th>{html.escape(B['name'])} total / month</th><th>Cheaper</th></tr></thead><tbody>{pr_rows}</tbody></table></div>
+<p class="fine">Totals are the cheapest plan that allows paid subscriptions (yearly billing) plus fees. {html.escape(fees_both())}. One card payment per paying reader per month is assumed. Your own numbers will differ; try them in the <a href="index.html">cost calculator</a>.</p>
+"""
+        else:
+            skip = [p["name"] for p in (A, B) if p["fee_model"]["type"] == "not_compared"]
+            paid_line = f"<li><strong>Charging readers:</strong> {html.escape(' and '.join(skip))} paid-newsletter costs aren't in our data yet, so this page compares free newsletters only.</li>"
+
+        pp_head = "".join(f"<th>{html.escape(P[pid]['name'])} {html.escape(pn)}</th>" for pid, pn in plan_pairs)
+        pp_rows = ""
+        for s in sizes:
+            vals = [plan_price(P[pid], pn, s, 1) for pid, pn in plan_pairs]
+            pp_rows += f"<tr><td>{s:,}</td>" + "".join(f"<td>{money(v) if v is not None else '–'}</td>" for v in vals) + "</tr>"
+        notes = " ".join(html.escape(pl["monthly_factor_note"]) for p in (A, B) for pl in p["plans"] if pl.get("monthly_factor_note"))
+        others = " · ".join(f'<a href="{f}">{html.escape(t)}</a>' for f, t in COMPARISONS if f != fname)
+        guides = ", ".join(f'<a href="{g}">{html.escape(t)}</a>' for g, t in PRICING_GUIDES if g.split("-")[0] in (aid, bid))
+        body = f"""
+<h1>{html.escape(A['name'])} vs {html.escape(B['name'])}: what each costs at every list size</h1>
+<p class="lede">{lede} Prices are from each vendor's own pricing page, checked on {DATA['verified_on']}.</p>
+{disclosure_box('')}
+<h2>The short version</h2>
+<ul>
+<li><strong>Free plans:</strong> {html.escape(A['name'])}: {html.escape(A['free_plan']['summary'])} {html.escape(B['name'])}: {html.escape(B['free_plan']['summary'])}</li>
+<li><strong>Free newsletter:</strong> {free_line}</li>
+{paid_line}
+{"".join(f"<li>{x}</li>" for x in extra_points)}
+</ul>
+
+<h2>Free newsletter, yearly billing (monthly equivalent)</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{platform_link(A)}</th><th>{platform_link(B)}</th><th>Cheaper</th></tr></thead><tbody>{rows('annual')}</tbody></table></div>
+
+<h2>Free newsletter, month-to-month billing</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{html.escape(A['name'])}</th><th>{html.escape(B['name'])}</th><th>Cheaper</th></tr></thead><tbody>{rows('monthly')}</tbody></table></div>
+<p class="fine">The cheapest plan that holds the list is used for each platform. "–" means no plan for that size in our data. Both vendors price in tiers, so a list slightly over a tier limit moves to the next price.</p>
+{paid_html}
+<h2>Plan against plan, yearly billing</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th>{pp_head}</tr></thead><tbody>{pp_rows}</tbody></table></div>
+<p class="fine">{notes} Plan features differ, so compare what each plan includes on the vendor's pricing page before choosing on price.</p>
+<div class="ctas">{cta(A, DATA['verified_on'])}{cta(B, DATA['verified_on'])}</div>
+
+<h2>Related</h2>
+<p>Price guides: {guides}. Other comparisons: {others}. Or run your own numbers in the <a href="index.html">cost calculator</a>. Every price change we find goes in the <a href="changelog.html">price change log</a>.</p>
+<p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
+"""
+        year = DATA["verified_on"][:4]
+        pages.append((fname, title or f"{A['name']} vs {B['name']} Cost at Every List Size ({year})",
+                      desc or f"{A['name']} vs {B['name']} prices side by side from {sizes[0]:,} to {sizes[-1]:,} subscribers, yearly and monthly, using prices verified {DATA['verified_on']}.",
+                      body, None))
+
+    _gh, _bh = P["ghost"], P["beehiiv"]
+    _gh_paid = [pl for pl in _gh["plans"] if pl["paid_subscriptions"]]
+    _gh_nopaid = [pl["name"] for pl in _gh["plans"] if not pl["paid_subscriptions"]]
+    pair_page("ghost", "beehiiv", "ghost-vs-beehiiv-cost.html",
+              [1000, 2500, 5000, 10000, 25000, 50000, 100000],
+              [("ghost", "Publisher"), ("beehiiv", "Lite"), ("ghost", "Business"), ("beehiiv", "Pro")],
+              "Ghost(Pro) and beehiiv both take a 0% cut of paid subscriptions, so for a paid newsletter the difference comes down to the plan price at your list size. This page puts their published prices side by side, for a free newsletter and for one that charges readers.",
+              [f"<strong>Members vs subscribers:</strong> Ghost(Pro) prices by members (free and paying sign-ups together); beehiiv prices by subscribers. Both count everyone on your list.",
+               f"<strong>Ghost(Pro) Starter</strong> ({money(_gh['plans'][0]['tiers'][0][1])}/month billed yearly, up to {_gh['plans'][0]['tiers'][0][0]:,} members) is the cheapest Ghost(Pro) plan but doesn't include paid memberships; {' and '.join(html.escape(pl['name']) for pl in _gh_paid)} do. Ghost's pricing page shows Business at its {_gh_paid[-1]['tiers'][0][0]:,}-member price for smaller lists."],
+              title="Ghost(Pro) vs beehiiv Cost for Free and Paid Newsletters (" + DATA["verified_on"][:4] + ")",
+              desc="Ghost(Pro) vs beehiiv prices side by side from 1,000 to 100,000 subscribers, for free and paid newsletters (both take 0%), using prices verified " + DATA["verified_on"] + ".")
+
+    _ml = P["mailerlite"]
+    pair_page("mailerlite", "beehiiv", "mailerlite-vs-beehiiv-cost.html",
+              [500, 1000, 2500, 5000, 10000, 25000, 50000, 100000],
+              [("mailerlite", "Comfort"), ("beehiiv", "Lite"), ("mailerlite", "Power"), ("beehiiv", "Pro")],
+              "MailerLite is an email marketing tool priced by subscribers; beehiiv is a newsletter platform with a website built in. This page puts their published prices side by side from 500 to 100,000 subscribers.",
+              [f"<strong>Smallest paid plans:</strong> MailerLite {html.escape(_ml['plans'][0]['name'])} starts at {money(_ml['plans'][0]['tiers'][0][1])}/month billed yearly for up to {_ml['plans'][0]['tiers'][0][0]:,} subscribers; beehiiv {html.escape(_bh['plans'][0]['name'])} starts at {money(_bh['plans'][0]['tiers'][0][1])}/month billed yearly for up to {_bh['plans'][0]['tiers'][0][0]:,}."],
+              title="MailerLite vs beehiiv Pricing Compared at Every List Size (" + DATA["verified_on"][:4] + ")")
 
     # ---- single-platform pricing pages (all numbers from platforms.json)
     def tier_price(plan, s, idx):
@@ -484,10 +636,6 @@ def build(base):
             if "total" in c and (best is None or c["total"] < best[1]["total"]):
                 best = (q, c)
         return best
-
-    PRICING_GUIDES = [("kit-pricing.html", "Kit pricing explained"), ("beehiiv-pricing.html", "beehiiv pricing explained"),
-                      ("mailerlite-pricing.html", "MailerLite pricing explained"), ("ghost-pricing.html", "Ghost(Pro) pricing explained"),
-                      ("systemeio-pricing.html", "systeme.io pricing explained")]
 
     def pricing_page(pid, fname, extra_note="", size_labels=None, unit="subscribers"):
         size_labels = size_labels or {}
@@ -565,8 +713,7 @@ def build(base):
 {cta(p, DATA['verified_on'])}
 <h2>Related</h2>
 <ul>
-<li><a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a></li>
-<li><a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost at every list size</a></li>
+{"".join(f'<li><a href="{f}">{html.escape(t)} cost compared</a></li>' for f, t in COMPARISONS if f != "substack-fees.html" and p["id"] in f.replace("-cost.html", "").split("-vs-"))}
 <li><a href="cheapest-newsletter-platform-1000-subscribers.html">Cheapest newsletter platform for 1,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-5000-subscribers.html">Cheapest newsletter platform for 5,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
@@ -673,7 +820,7 @@ def build(base):
 <h2>If you'll pass {S:,} soon: prices at {over:,}</h2>
 <div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(over_y)}</tbody></table></div>
 <p class="fine">Free newsletter, yearly billing. Free plans have hard subscriber caps and paid plans are priced in tiers, so a few hundred extra subscribers can move you into the next price band.</p>
-<p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {names_and([f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S])} subscribers. Only comparing two platforms? See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a> or <a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit</a>. Single-platform price guides: {", ".join(f'<a href="{g}">{html.escape(t.replace(" pricing explained", ""))}</a>' for g, t in PRICING_GUIDES)}. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
+<p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {names_and([f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S])} subscribers. Only comparing two platforms? See {names_and([f'<a href="{f}">{html.escape(t)}</a>' for f, t in COMPARISONS if f != "substack-fees.html"]).replace(" and ", " or ")}. Single-platform price guides: {", ".join(f'<a href="{g}">{html.escape(t.replace(" pricing explained", ""))}</a>' for g, t in PRICING_GUIDES)}. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
 <p>We haven't run hands-on tests of these platforms yet, so this ranking covers published prices only.</p>
 """
         pages.append((f"cheapest-newsletter-platform-{S}-subscribers.html", f"Cheapest Newsletter Platform for {S:,} Subscribers (" + DATA["verified_on"][:4] + ")",

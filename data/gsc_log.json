@@ -1,5 +1,183 @@
 [
   {
+    "date": "2026-11-21",
+    "data_range": "Search Console data through 2026-11-18. Last 7 days = 2026-11-12 to 2026-11-18; last 28 days shows data from 2026-11-06.",
+    "clicks_7d": 0,
+    "impressions_7d": 43,
+    "ctr_7d": 0.0,
+    "avg_position_7d": 48.8,
+    "clicks_28d": 0,
+    "impressions_28d": 54,
+    "ctr_28d": 0.0,
+    "avg_position_28d": 46.9,
+    "top_queries": [
+      {
+        "query": "mailerlite pricing",
+        "clicks": 0,
+        "impressions": 9,
+        "ctr": 0.0,
+        "position": 66.8
+      },
+      {
+        "query": "ghost pricing",
+        "clicks": 0,
+        "impressions": 3,
+        "ctr": 0.0,
+        "position": 85.3
+      },
+      {
+        "query": "mailerlite pricing comparison",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0.0,
+        "position": 39.5
+      },
+      {
+        "query": "kit pricing",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0.0,
+        "position": 55.5
+      },
+      {
+        "query": "kit price",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0.0,
+        "position": 77.5
+      },
+      {
+        "query": "pricing kit",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0.0,
+        "position": 79.0
+      },
+      {
+        "query": "ghost price",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0.0,
+        "position": 29.0
+      },
+      {
+        "query": "ghost subscription",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0.0,
+        "position": 34.0
+      },
+      {
+        "query": "mailer lite prices",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0.0,
+        "position": 53.0
+      },
+      {
+        "query": "symantec ghost pricing",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0.0,
+        "position": 67.0
+      }
+    ],
+    "other_queries_7d": [
+      "ghostpro (1, pos 71)",
+      "ghost premium (1, pos 77)",
+      "ghost pro (1, pos 77)",
+      "kit email marketing pricing (1, pos 91)"
+    ],
+    "top_pages": [
+      {
+        "page": "/kit-pricing.html",
+        "clicks": 0,
+        "impressions": 17,
+        "ctr": 0.0,
+        "position": 35.2
+      },
+      {
+        "page": "/mailerlite-pricing.html",
+        "clicks": 0,
+        "impressions": 13,
+        "ctr": 0.0,
+        "position": 61.1
+      },
+      {
+        "page": "/ghost-pricing.html",
+        "clicks": 0,
+        "impressions": 11,
+        "ctr": 0.0,
+        "position": 57.6
+      },
+      {
+        "page": "/kit-vs-beehiiv-cost.html",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0.0,
+        "position": 9.0
+      },
+      {
+        "page": "/substack-fees.html",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0.0,
+        "position": 65.0
+      }
+    ],
+    "top_pages_28d": [
+      {
+        "page": "/kit-pricing.html",
+        "impressions": 26,
+        "position": 39.5
+      },
+      {
+        "page": "/mailerlite-pricing.html",
+        "impressions": 13,
+        "position": 61.1
+      },
+      {
+        "page": "/ghost-pricing.html",
+        "impressions": 11,
+        "position": 57.6
+      },
+      {
+        "page": "/kit-vs-beehiiv-cost.html",
+        "impressions": 2,
+        "position": 6.0
+      },
+      {
+        "page": "/beehiiv-pricing.html",
+        "impressions": 1,
+        "position": 3.0
+      },
+      {
+        "page": "/substack-fees.html",
+        "impressions": 1,
+        "position": 65.0
+      }
+    ],
+    "index_status": {
+      "report_updated": "2026-11-16",
+      "indexed_count": 7,
+      "indexed": [
+        "/",
+        "/kit-pricing.html",
+        "/beehiiv-pricing.html",
+        "/kit-vs-beehiiv-cost.html",
+        "/substack-fees.html",
+        "/mailerlite-pricing.html",
+        "/ghost-pricing.html"
+      ],
+      "not_indexed_count": 0,
+      "not_indexed_note": "Summary shows 0 not indexed; reason table lists 'Crawled - currently not indexed' (Google systems) with 1 page but no URL list. Pages not yet in the indexed list are mostly ones requested 2026-11-15 to 11-19 or not yet discovered."
+    },
+    "sitemap": "/sitemap.xml: status 'Couldn't fetch' (取得できませんでした), submitted 2026-11-15, no last-read date, 0 discovered pages.",
+    "comparison_vs_last_week": "Impressions 7d: 5 -> 43 (28d: 54). Clicks still 0. Avg position 34.2 -> 48.8 (more queries, mostly at positions 30-90). Indexed pages 5 -> 7 (mailerlite-pricing and ghost-pricing newly indexed, both requested 2026-11-15). MailerLite and Ghost queries appeared for the first time.",
+    "actions": "Prices re-checked, no changes. Added ghost-vs-beehiiv-cost.html (Ghost queries: ghost pricing/ghost pro/ghost subscription) and mailerlite-vs-beehiiv-cost.html (query 'mailerlite pricing comparison'). No title changes: no query reached position <20.",
+    "indexing_requested": []
+  },
+  {
     "date": "2026-11-14",
     "data_range": "Search Console data available 2026-11-06 to 2026-11-10 (last 7 days and last 28 days show the same totals)",
     "clicks_7d": 0,
