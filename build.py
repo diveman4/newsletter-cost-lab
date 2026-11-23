@@ -93,7 +93,7 @@ def page(path, title, desc, body, base, jsonld=None):
 </main>
 <footer class="wrap foot">
 <p>Prices last verified against each vendor's own pricing page on <strong>{DATA['verified_on']}</strong>. Vendors change prices without notice. Check the linked pricing page before you buy.</p>
-<p><a href="{rel}about.html">About</a> · <a href="{rel}disclosure.html">Affiliate disclosure</a> · <a href="{rel}changelog.html">Price change log</a> · <a href="{rel}contact.html">Contact</a></p>
+<p><a href="{rel}about.html">About</a> · <a href="{rel}disclosure.html">Affiliate disclosure</a> · <a href="{rel}privacy.html">Privacy policy</a> · <a href="{rel}changelog.html">Price change log</a> · <a href="{rel}contact.html">Contact</a></p>
 </footer>
 </body>
 </html>
@@ -891,6 +891,28 @@ def build(base):
 <p>Affiliate links are always marked with an asterisk (*) right next to the link, and they carry <code>rel="sponsored"</code>.</p>
 <p><strong>Affiliate links currently on this site:</strong></p><ul>{aff_list}</ul>
 <p><strong>What commissions never change:</strong> the numbers. The calculator and tables sort platforms purely by price from the vendor's own pricing page. A platform that pays us more doesn't rank higher, and a platform with no affiliate program is still included.</p>
+""", None))
+    aff_names = [p["name"] for p in DATA["platforms"] if p.get("affiliate_url")]
+    pages.append(("privacy.html", "Privacy Policy", "What Newsletter Cost Lab collects (very little), how affiliate links work, and how to contact us.", f"""
+<h1>Privacy policy</h1>
+<p class="fine">Last updated: 2026-11-23</p>
+<p>{SITE_NAME} is a small independent site. We don't ask for your name, email address or any other personal details, and we don't run ads.</p>
+<h2>What this site collects</h2>
+<ul>
+<li><strong>No accounts, forms or newsletters.</strong> There is nothing to sign up for here.</li>
+<li><strong>No analytics or tracking scripts.</strong> We don't use Google Analytics, advertising pixels or similar tools, and the site itself sets no cookies.</li>
+<li><strong>The cost calculator runs in your browser.</strong> The numbers you type are not sent to us or stored anywhere.</li>
+</ul>
+<h2>Hosting</h2>
+<p>The site is hosted on GitHub Pages. Like most web hosts, GitHub may log technical data such as your IP address when your browser requests a page, for security and to run the service. We don't receive or use those logs. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener" target="_blank">GitHub's privacy statement</a>.</p>
+<h2>Search statistics</h2>
+<p>We use Google Search Console to see which search terms bring people to the site. It shows only totals (for example, how many times a page appeared in Google results), not who visited.</p>
+<h2>Affiliate links</h2>
+<p>Some links are affiliate links, marked with an asterisk (*){(': currently ' + ', '.join(html.escape(n) for n in aff_names)) if aff_names else ''}. If you click one, you leave this site, and the platform or its affiliate partner may set a cookie on its own website to record that you came from us. That cookie is governed by that company's privacy policy, not ours. Read more in our <a href="disclosure.html">affiliate disclosure</a>.</p>
+<h2>Contact and GitHub</h2>
+<p>The <a href="contact.html">contact page</a> points to the site's public GitHub repository. Anything you post there is public and handled under GitHub's terms.</p>
+<h2>Changes</h2>
+<p>If this policy changes, we'll update this page and the date at the top.</p>
 """, None))
     pages.append(("contact.html", "Contact", "How to contact Newsletter Cost Lab.", """
 <h1>Contact</h1>
