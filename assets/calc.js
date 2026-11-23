@@ -61,12 +61,41 @@
     h += "</tbody></table></div>";
     if (rev > 0) h += '<p class="fine">Paid revenue: ' + money(rev) + "/month from " + paid.toLocaleString("en-US") + " paying readers.</p>";
     if (skip.length) h += '<p class="fine">Not shown: ' + skip.map(function (s) { return esc(s[0].name) + " (" + esc(s[1]) + ")"; }).join("; ") + ".</p>";
+    h += '<p class="share"><button type="button" id="copylink">Copy a link to these results</button> <span id="copied" class="fine" aria-live="polite"></span></p>';
     $("result").innerHTML = h;
+    updateUrl(subs, paid, price, billing);
+    $("copylink").addEventListener("click", copyLink);
+  }
+
+  // Shareable links: ?subs=5000&paid=250&price=8&billing=monthly
+  function updateUrl(subs, paid, price, billing) {
+    try {
+      var q = "?subs=" + subs + (paid ? "&paid=" + paid + "&price=" + price : "") + (billing === "monthly" ? "&billing=monthly" : "");
+      history.replaceState(null, "", location.pathname + q + location.hash);
+    } catch (e) {}
+  }
+  function copyLink() {
+    var url = location.href, done = function () { $("copied").textContent = "Link copied."; };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(url).then(done, function () { $("copied").textContent = url; }); }
+      else { $("copied").textContent = url; }
+    } catch (e) { $("copied").textContent = url; }
+  }
+  function readUrl() {
+    try {
+      var q = new URLSearchParams(location.search);
+      ["subs", "paid", "price"].forEach(function (k) {
+        var v = parseFloat(q.get(k));
+        if (isFinite(v) && v >= 0 && v <= 10000000) $(k).value = String(v);
+      });
+      if (q.get("billing") === "monthly" || q.get("billing") === "annual") $("billing").value = q.get("billing");
+    } catch (e) {}
   }
 
   function init() {
     fetch("assets/platforms.json").then(function (r) { return r.json(); }).then(function (d) {
       DATA = d;
+      readUrl();
       ["subs", "paid", "price", "billing"].forEach(function (id) { $(id).addEventListener("input", render); $(id).addEventListener("change", render); });
       render();
     }).catch(function () { $("result").innerHTML = "<p>Could not load price data. The tables below still work.</p>"; });

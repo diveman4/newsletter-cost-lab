@@ -8,6 +8,53 @@ import argparse, html, json, math, os, shutil, datetime
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = json.load(open(os.path.join(ROOT, "data", "platforms.json")))
 SITE_NAME = "Newsletter Cost Lab"
+
+# Hands-on test results written by TA (data/tests/<platform_id>.json). Only files with a tester and date are used;
+# with no files, no test claims appear anywhere on the site.
+TESTS = {}
+_tdir = os.path.join(ROOT, "data", "tests")
+if os.path.isdir(_tdir):
+    for _f in sorted(os.listdir(_tdir)):
+        if _f.endswith(".json"):
+            _t = json.load(open(os.path.join(_tdir, _f)))
+            if not (_t.get("tester") and _t.get("tested_on") and _t.get("platform_id")):
+                raise SystemExit(f"data/tests/{_f}: needs platform_id, tester and tested_on")
+            TESTS[_t["platform_id"]] = _t
+PLACEMENT = {"inbox": "Inbox", "promotions": "Promotions tab", "spam": "Spam", "not_tested": "Not tested"}
+
+
+def test_rows(t):
+    r = t.get("results", {})
+    rows = []
+    if r.get("signup_to_first_issue_minutes") is not None:
+        rows.append(("Sign-up to first issue sent", f"{r['signup_to_first_issue_minutes']} minutes"))
+    sf = r.get("signup_form")
+    if sf:
+        rows.append(("Sign-up form built and embedded", ("Yes" if sf.get("done") else "No") + (f", {sf['minutes']} minutes" if sf.get("minutes") is not None else "") + (f". {sf['note']}" if sf.get("note") else "")))
+    ip = r.get("inbox_placement")
+    if ip:
+        rows.append(("Where the test issue landed", "; ".join(f"{k.capitalize()}: {PLACEMENT.get(v, v)}" for k, v in ip.items())))
+    ie = r.get("import_export")
+    if ie:
+        rows.append(("Import / export", "; ".join(x for x in [f"imported {ie['imported']} test contacts" if ie.get("imported") is not None else "", f"export included {ie['exported_fields']}" if ie.get("exported_fields") else "", ie.get("note", "")] if x)))
+    ws = r.get("welcome_sequence")
+    if ws:
+        rows.append(("3-email welcome sequence on this plan", ("Possible" if ws.get("possible_on_plan") else "Not possible") + (f". {ws['note']}" if ws.get("note") else "")))
+    return rows
+
+
+def test_section(p, rel=""):
+    t = TESTS.get(p["id"])
+    if not t:
+        return ""
+    rows = "".join(f"<tr><th>{html.escape(a)}</th><td>{html.escape(b)}</td></tr>" for a, b in test_rows(t))
+    probs = "".join(f"<li>{html.escape(x)}</li>" for x in t.get("problems", []))
+    return (f'<h2>Our hands-on test of {html.escape(p["name"])}</h2>'
+            f'<p>Tested by {html.escape(t["tester"])} on {html.escape(t["tested_on"])} using the {html.escape(t.get("plan", "free"))} plan, following our <a href="{rel}methodology.html#lab">fixed-task test</a>.</p>'
+            f'<div class="scroll"><table class="grid-table"><tbody>{rows}</tbody></table></div>'
+            + (f"<p><strong>What went wrong:</strong></p><ul>{probs}</ul>" if probs else "")
+            + (f'<p>{html.escape(t["notes"])}</p>' if t.get("notes") else "")
+            + f'<p class="fine">One test on one date. Results such as inbox placement can vary from send to send. See <a href="{rel}hands-on-tests.html">all test results</a>.</p>')
 GSC_VERIFICATION = "8OATEkWut0D8qP_lGnY6NPHhcCzGoT8kGBMH8Hik5fw"  # Google Search Console (TA)
 OUT = os.path.join(ROOT, "site")
 
@@ -722,7 +769,7 @@ def build(base):
 <li><a href="free-plans.html">Free plans compared</a></li>
 <li><a href="changelog.html">Price change log</a></li>
 </ul>
-<p>We haven't run hands-on tests of {html.escape(p['name'])} yet, so this page covers published prices and limits only.</p>
+{test_section(p) or f"<p>We haven't run hands-on tests of {html.escape(p['name'])} yet, so this page covers published prices and limits only.</p>"}
 """
         pages.append((fname, f"{p['name']} Pricing {year}{fm_name}: Every Plan and List Size Explained",
                       f"{p['name']}{fm_name} pricing at every subscriber count: free plan limit, {plan_names} prices on yearly and monthly billing, and paid-newsletter fees. Verified {DATA['verified_on']}.", body, None))
@@ -841,6 +888,20 @@ def build(base):
                   "25,000 subscribers is well past every capped free plan, so here the monthly bill depends entirely on each platform's paid tiers.",
                   f"systeme.io {_s_unl} has no contact cap in our data, so its price stays the same as you grow; the other platforms step up in tiers.")
 
+    # ---- hands-on test results (only when TA has written at least one results file)
+    if TESTS:
+        tested = [P[k] for k in sorted(TESTS, key=lambda k: P[k]["name"].lower()) if k in P]
+        secs = "".join(test_section(p) for p in tested)
+        body = f"""
+<h1>Hands-on newsletter platform tests</h1>
+<p class="lede">We ran the same fixed tasks on each platform's plan, with the same inputs, and recorded what happened, including what went wrong. Platforms tested so far: {html.escape(', '.join(p['name'] for p in tested))}.</p>
+{disclosure_box('')}
+{secs}
+<p>How the test works: <a href="methodology.html#lab">our method</a>. Prices for every platform: <a href="index.html">cost calculator</a>.</p>
+"""
+        pages.append(("hands-on-tests.html", "Newsletter Platform Hands-on Tests: Same Tasks on Every Platform",
+                      "Results of running the same fixed tasks (first issue, sign-up form, inbox placement, import/export, welcome sequence) on each newsletter platform.", body, None))
+
     # ---- methodology
     srcs = "".join(f"<li>{html.escape(p['name'])}: <a href='{html.escape(p['pricing_url'])}' rel='noopener' target='_blank'>{html.escape(p['pricing_url'])}</a></li>" for p in DATA["platforms"])
     body = f"""
@@ -854,7 +915,7 @@ def build(base):
 <li>Prices are re-checked regularly, and every change is recorded in the <a href="changelog.html">price change log</a>.</li>
 </ol>
 <p>Sources used:</p><ul>{srcs}</ul>
-<h2 id="lab">Fixed-task platform tests (coming soon)</h2>
+<h2 id="lab">Fixed-task platform tests{"" if TESTS else " (coming soon)"}</h2>
 <p>Price is only half of the decision. We're preparing a repeatable test that runs the same tasks on each platform's free plan, with the same inputs, and publishes the raw results:</p>
 <ol>
 <li>Time to go from sign-up to a sent first issue.</li>
@@ -863,7 +924,7 @@ def build(base):
 <li>Import and export a test list of 100 addresses, and check what's kept.</li>
 <li>Set up a 3-email welcome sequence where the free plan allows it.</li>
 </ol>
-<p>Results will be dated, repeated on a schedule, and published with what went wrong as well as what worked. We won't claim to have tested anything until a test has actually been run.</p>
+<p>Results will be dated, repeated on a schedule, and published with what went wrong as well as what worked. We won't claim to have tested anything until a test has actually been run.{(' Results so far: <a href="hands-on-tests.html">hands-on test results</a>.') if TESTS else ''}</p>
 """
     pages.append(("methodology.html", "How We Verify Newsletter Platform Prices", "Our method for checking newsletter platform prices and the fixed-task tests we run on each platform.", body, None))
 
