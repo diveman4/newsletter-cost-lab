@@ -1,0 +1,98 @@
+{
+  "platform_id": "kit",
+  "tester": "TA",
+  "tested_on": "2026-11-25",
+  "plan": "14-day trial (started automatically at sign-up)",
+  "results": {
+    "signup_to_first_issue_minutes": 12,
+    "signup_form": {
+      "done": true,
+      "minutes": 4.5,
+      "note": "Hosted landing page from the \"College\" template; double opt-in on by default; the confirmation email reached Gmail's main inbox"
+    },
+    "inbox_placement": {
+      "gmail": "spam",
+      "outlook": "not_tested",
+      "yahoo": "not_tested"
+    },
+    "import_export": {
+      "imported": 10,
+      "exported_fields": "first name, email, created date, status, tags, city/state/country, referrer, UTM fields and cancelled date",
+      "note": "export arrives as an emailed download link valid for 5 days"
+    },
+    "welcome_sequence": {
+      "possible_on_plan": false,
+      "note": "Not on the Free plan: Kit's help page lists email sequences as a paid-plan (Creator and up) feature. During the trial the sequence editor did open"
+    }
+  },
+  "problems": [
+    "The test issue landed in Gmail's spam folder. It was sent from a Gmail address through Kit's servers (\"via n.convertkit.com\"). The double opt-in confirmation email from the same address reached the main inbox.",
+    "To send, you have to press \"Continue\" at the bottom right of the publish screen, which was easy to miss.",
+    "Right after adding a subscriber by hand, the list still showed 0 until the page was refreshed.",
+    "Export is tucked under a \"…\" menu in a pop-up at the bottom of the screen."
+  ],
+  "notes": "There was no plan choice at sign-up: a 14-day trial of paid features started automatically. Kit filled in a US mailing address in the email footer, so no home address was needed. Emails carry a \"Built with Kit\" badge.",
+  "tester_comment": "It was easier than I expected, but the test email going to spam worried me.",
+  "screenshots": [
+    {
+      "file": "kit/01-dashboard.webp",
+      "caption": "Right after sign-up: no plan choice, a 14-day trial started automatically (bottom left).",
+      "w": 1100,
+      "h": 756
+    },
+    {
+      "file": "kit/02-template.webp",
+      "caption": "Writing the first email starts with a template choice. We picked \"Text only\".",
+      "w": 1100,
+      "h": 783
+    },
+    {
+      "file": "kit/03-editor.webp",
+      "caption": "The test issue in Kit's editor. Kit filled in a US mailing address in the footer and adds a \"Built with Kit\" badge.",
+      "w": 1100,
+      "h": 470
+    },
+    {
+      "file": "kit/04-send-settings.webp",
+      "caption": "Send settings. The From address was our Gmail address. To actually send, you press \"Continue\" at the bottom right (not shown), which was easy to miss.",
+      "w": 680,
+      "h": 1038
+    },
+    {
+      "file": "kit/05-sent.webp",
+      "caption": "Confirmation after sending to 1 subscriber.",
+      "w": 1092,
+      "h": 906
+    },
+    {
+      "file": "kit/06-gmail-spam.webp",
+      "caption": "Where it landed: Gmail's spam folder, \"via n.convertkit.com\".",
+      "w": 1100,
+      "h": 328
+    },
+    {
+      "file": "kit/07-landing-success.webp",
+      "caption": "Sign-up form test: a landing page from the \"College\" template after subscribing. Double opt-in is on by default.",
+      "w": 600,
+      "h": 760
+    },
+    {
+      "file": "kit/08-import-mapping.webp",
+      "caption": "CSV import: Kit matched both columns to the right fields automatically.",
+      "w": 695,
+      "h": 677
+    },
+    {
+      "file": "kit/09-export-email.webp",
+      "caption": "Export isn't a direct download: Kit emails a link that expires after 5 days.",
+      "w": 621,
+      "h": 657
+    },
+    {
+      "file": "kit/10-sequence.webp",
+      "caption": "The sequence editor opened during the trial. Kit's help page lists email sequences as a paid-plan feature.",
+      "w": 1100,
+      "h": 815
+    }
+  ]
+}

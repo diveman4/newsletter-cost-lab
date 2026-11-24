@@ -32,4 +32,6 @@ sup.aff{color:var(--muted);margin-left:1px}
 .cta{margin:16px 0;line-height:2}.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:9px 16px;border-radius:8px;line-height:1.4}.btn:hover{background:#1b46b0}
 .ctas .cta{margin:10px 0}
 .share button{font:inherit;font-size:.88rem;padding:7px 12px;border:1px solid #cfd4dc;border-radius:8px;background:#fff;color:var(--accent);cursor:pointer}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin:10px 0 18px}.shots figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px}.shots img{display:block;width:100%;height:auto;border-radius:6px}.shots figcaption{font-size:.82rem;color:var(--muted);margin-top:6px}
+blockquote.tester{margin:14px 0;padding:10px 14px;border-left:4px solid var(--accent);background:#fff;font-style:italic}
 @media(max-width:600px){h1{font-size:1.4rem}th,td{padding:7px 8px}}

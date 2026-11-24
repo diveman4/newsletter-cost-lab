@@ -23,3 +23,7 @@ for a test that wasn't actually run. With no `.json` files here, the site shows 
 
 `inbox_placement` values: `inbox`, `promotions`, `spam`, `not_tested`. Any result key can be left out.
 Protocol: see `docs/hands-on-test-protocol-ja.md`.
+
+Optional extra keys: `"tester_comment"` (TA's own one-line impression, shown as a quote) and
+`"screenshots": [{"file": "kit/01-dashboard.webp", "caption": "...", "w": 1100, "h": 756}]`
+(images live in `assets/tests/<platform>/`; black out personal names and email addresses before adding).

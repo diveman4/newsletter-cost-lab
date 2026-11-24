@@ -20,6 +20,9 @@ if os.path.isdir(_tdir):
             if not (_t.get("tester") and _t.get("tested_on") and _t.get("platform_id")):
                 raise SystemExit(f"data/tests/{_f}: needs platform_id, tester and tested_on")
             TESTS[_t["platform_id"]] = _t
+for _p in DATA["platforms"]:
+    if _p["id"] in TESTS:
+        TESTS[_p["id"]]["_name"] = _p["name"]
 PLACEMENT = {"inbox": "Inbox", "promotions": "Promotions tab", "spam": "Spam", "not_tested": "Not tested"}
 
 
@@ -30,7 +33,7 @@ def test_rows(t):
         rows.append(("Sign-up to first issue sent", f"{r['signup_to_first_issue_minutes']} minutes"))
     sf = r.get("signup_form")
     if sf:
-        rows.append(("Sign-up form built and embedded", ("Yes" if sf.get("done") else "No") + (f", {sf['minutes']} minutes" if sf.get("minutes") is not None else "") + (f". {sf['note']}" if sf.get("note") else "")))
+        rows.append(("Sign-up form or landing page built", ("Yes" if sf.get("done") else "No") + (f", {sf['minutes']} minutes" if sf.get("minutes") is not None else "") + (f". {sf['note']}" if sf.get("note") else "")))
     ip = r.get("inbox_placement")
     if ip:
         rows.append(("Where the test issue landed", "; ".join(f"{k.capitalize()}: {PLACEMENT.get(v, v)}" for k, v in ip.items())))
@@ -39,8 +42,34 @@ def test_rows(t):
         rows.append(("Import / export", "; ".join(x for x in [f"imported {ie['imported']} test contacts" if ie.get("imported") is not None else "", f"export included {ie['exported_fields']}" if ie.get("exported_fields") else "", ie.get("note", "")] if x)))
     ws = r.get("welcome_sequence")
     if ws:
-        rows.append(("3-email welcome sequence on this plan", ("Possible" if ws.get("possible_on_plan") else "Not possible") + (f". {ws['note']}" if ws.get("note") else "")))
+        rows.append(("3-email welcome sequence on the free plan", ("Possible" if ws.get("possible_on_plan") else "Not possible") + (f". {ws['note']}" if ws.get("note") else "")))
     return rows
+
+
+def gallery(t, rel=""):
+    shots = t.get("screenshots", [])
+    if not shots:
+        return ""
+    figs = ""
+    for sh in shots:
+        w, h = sh.get("w"), sh.get("h")
+        size = f' width="{w}" height="{h}"' if w and h else ""
+        figs += (f'<figure><a href="{rel}assets/tests/{html.escape(sh["file"])}" target="_blank" rel="noopener">'
+                 f'<img src="{rel}assets/tests/{html.escape(sh["file"])}" alt="{html.escape(sh["caption"])}" loading="lazy"{size}></a>'
+                 f'<figcaption>{html.escape(sh["caption"])}</figcaption></figure>')
+    return f'<h3>Screenshots from the test</h3><p class="fine">Personal names and email addresses are blacked out. Tap an image to enlarge.</p><div class="shots">{figs}</div>'
+
+
+def hands_on_line(ids, rel="", what="this comparison", only=""):
+    """Accurate 'have we tested this?' sentence for pages covering several platforms."""
+    tested = [i for i in ids if i in TESTS]
+    if not tested:
+        return f"<p>We haven't run hands-on tests of {'either platform' if len(ids) == 2 else 'these platforms'} yet, so {what} covers published prices{only} only.</p>"
+    links = ", ".join(f'{html.escape(TESTS[i]["_name"])} ({html.escape(TESTS[i]["tested_on"])})' for i in tested)
+    rest = len(ids) - len(tested)
+    return (f'<p>Hands-on test results so far: {links}. See <a href="{rel}hands-on-tests.html">our hands-on tests</a>.'
+            + (f" The other {'platform' if rest == 1 else 'platforms'} here {'hasn' if rest == 1 else 'haven'}'t been tested yet, so otherwise {what} covers published prices{only}." if rest else "")
+            + "</p>")
 
 
 def test_section(p, rel=""):
@@ -50,10 +79,12 @@ def test_section(p, rel=""):
     rows = "".join(f"<tr><th>{html.escape(a)}</th><td>{html.escape(b)}</td></tr>" for a, b in test_rows(t))
     probs = "".join(f"<li>{html.escape(x)}</li>" for x in t.get("problems", []))
     return (f'<h2>Our hands-on test of {html.escape(p["name"])}</h2>'
-            f'<p>Tested by {html.escape(t["tester"])} on {html.escape(t["tested_on"])} using the {html.escape(t.get("plan", "free"))} plan, following our <a href="{rel}methodology.html#lab">fixed-task test</a>.</p>'
+            f'<p>Tested by {html.escape(t["tester"])} on {html.escape(t["tested_on"])}, following our <a href="{rel}methodology.html#lab">fixed-task test</a>. Account: {html.escape(t.get("plan", "free plan"))}.</p>'
             f'<div class="scroll"><table class="grid-table"><tbody>{rows}</tbody></table></div>'
             + (f"<p><strong>What went wrong:</strong></p><ul>{probs}</ul>" if probs else "")
             + (f'<p>{html.escape(t["notes"])}</p>' if t.get("notes") else "")
+            + (f'<blockquote class="tester">&ldquo;{html.escape(t["tester_comment"])}&rdquo; &mdash; {html.escape(t["tester"])}</blockquote>' if t.get("tester_comment") else "")
+            + gallery(t, rel)
             + f'<p class="fine">One test on one date. Results such as inbox placement can vary from send to send. See <a href="{rel}hands-on-tests.html">all test results</a>.</p>')
 GSC_VERIFICATION = "8OATEkWut0D8qP_lGnY6NPHhcCzGoT8kGBMH8Hik5fw"  # Google Search Console (TA)
 OUT = os.path.join(ROOT, "site")
@@ -180,6 +211,8 @@ def build(base):
     os.makedirs(os.path.join(OUT, "guides"))
     os.makedirs(os.path.join(OUT, "assets"))
     shutil.copy(os.path.join(ROOT, "assets", "calc.js"), os.path.join(OUT, "assets", "calc.js"))
+    if os.path.isdir(os.path.join(ROOT, "assets", "tests")):
+        shutil.copytree(os.path.join(ROOT, "assets", "tests"), os.path.join(OUT, "assets", "tests"))
     with open(os.path.join(OUT, "assets", "platforms.json"), "w") as f:
         json.dump(DATA, f)
     P = {p["id"]: p for p in DATA["platforms"]}
@@ -238,6 +271,7 @@ def build(base):
 <li><strong>Free-plan ceilings differ a lot:</strong> 100 (Buttondown) to 10,000 (Kit) subscribers. See <a href="free-plans.html">the free plan comparison</a>.</li>
 <li><strong>Paid newsletters change the maths.</strong> A percentage cut is cheap when you're small and expensive when you grow.</li>
 <li><strong>Deciding between Kit and beehiiv?</strong> See <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv cost at every list size</a>.</li>
+{('<li><strong>Hands-on tests:</strong> we ran the same tasks (first issue, sign-up form, inbox placement, import/export) on ' + ', '.join(html.escape(P[k]['name']) for k in TESTS if k in P) + '. <a href="hands-on-tests.html">See what happened</a>.</li>') if TESTS else ''}
 <li><strong>Switching later has a cost.</strong> Paid subscribers on some platforms can't simply be moved. Pick a platform you can stay on for at least a year.</li>
 </ul>
 
@@ -349,7 +383,7 @@ def build(base):
 <tr><td>Newsletter plus a course or digital product</td><td>{platform_link(P['systemeio'])}</td><td>Free up to 2,000 contacts, 0% platform fee</td></tr>
 <tr><td>Small, simple, low-cost list</td><td>{platform_link(P['mailerlite'])}</td><td>Comfort from $10.80/mo (500 subs, yearly)</td></tr>
 </tbody></table></div>
-<p class="fine">We haven't run hands-on tests of these platforms yet, so this guide is based on published prices and limits only. Hands-on results will be added here once our <a href="../methodology.html#lab">fixed-task tests</a> are published.</p>
+{hands_on_line([q["id"] for q in DATA["platforms"]], "../", "this guide", " and limits")}
 """
     ld = {"@context": "https://schema.org", "@type": "Article", "headline": "How to choose your first newsletter platform: a 6-question checklist",
           "dateModified": DATA["verified_on"], "datePublished": DATA["verified_on"], "author": {"@type": "Organization", "name": SITE_NAME}}
@@ -447,7 +481,7 @@ def build(base):
 <li>Both vendors change prices from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
 </ul>
 <p>Also compare: <a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost</a>, <a href="ghost-vs-beehiiv-cost.html">Ghost(Pro) vs beehiiv cost</a>, <a href="mailerlite-vs-beehiiv-cost.html">MailerLite vs beehiiv cost</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="beehiiv-pricing.html">beehiiv pricing</a>.</p>
-<p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
+{hands_on_line(["kit", "beehiiv"], only=" and limits")}
 """
     pages.append(("kit-vs-beehiiv-cost.html", "Kit vs beehiiv Cost at Every List Size (" + DATA["verified_on"][:4] + ")",
                   "Kit vs beehiiv prices side by side from 1,000 to 50,000 subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
@@ -520,7 +554,7 @@ def build(base):
 <li>Prices change from time to time. Every change we find goes in the <a href="changelog.html">price change log</a>.</li>
 </ul>
 <p>More detail: <a href="mailerlite-pricing.html">MailerLite pricing</a>, <a href="kit-pricing.html">Kit pricing</a>, <a href="kit-vs-beehiiv-cost.html">Kit vs beehiiv</a>, <a href="mailerlite-vs-beehiiv-cost.html">MailerLite vs beehiiv</a>, or run your own numbers in the <a href="index.html">cost calculator</a>.</p>
-<p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
+{hands_on_line(["mailerlite", "kit"], only=" and limits")}
 """
     pages.append(("mailerlite-vs-kit-cost.html", "MailerLite vs Kit (ConvertKit) Pricing Compared at Every List Size (" + DATA["verified_on"][:4] + ")",
                   f"MailerLite vs Kit prices side by side from {mk_sizes[0]:,} to {mk_sizes[-1]:,} subscribers, yearly and monthly, using prices verified " + DATA["verified_on"] + ".", body, None))
@@ -640,7 +674,7 @@ def build(base):
 
 <h2>Related</h2>
 <p>Price guides: {guides}. Other comparisons: {others}. Or run your own numbers in the <a href="index.html">cost calculator</a>. Every price change we find goes in the <a href="changelog.html">price change log</a>.</p>
-<p>We haven't run hands-on tests of either platform yet, so this comparison covers published prices and limits only.</p>
+{hands_on_line([A["id"], B["id"]], only=" and limits")}
 """
         year = DATA["verified_on"][:4]
         pages.append((fname, title or f"{A['name']} vs {B['name']} Cost at Every List Size ({year})",
@@ -868,7 +902,7 @@ def build(base):
 <div class="scroll"><table class="grid-table"><thead><tr><th>Platform</th><th>Plan</th><th>Plan price</th><th>Total / month</th></tr></thead><tbody>{rows_html(over_y)}</tbody></table></div>
 <p class="fine">Free newsletter, yearly billing. Free plans have hard subscriber caps and paid plans are priced in tiers, so a few hundred extra subscribers can move you into the next price band.</p>
 <p>Different list size? Use the <a href="index.html">cost calculator</a> or see the rankings for {names_and([f'<a href="cheapest-newsletter-platform-{n}-subscribers.html">{n:,}</a>' for n in CHEAPEST_SIZES if n != S])} subscribers. Only comparing two platforms? See {names_and([f'<a href="{f}">{html.escape(t)}</a>' for f, t in COMPARISONS if f != "substack-fees.html"]).replace(" and ", " or ")}. Single-platform price guides: {", ".join(f'<a href="{g}">{html.escape(t.replace(" pricing explained", ""))}</a>' for g, t in PRICING_GUIDES)}. All free-plan limits: <a href="free-plans.html">free plans compared</a>.</p>
-<p>We haven't run hands-on tests of these platforms yet, so this ranking covers published prices only.</p>
+{hands_on_line([q["id"] for q in DATA["platforms"]], what="this ranking")}
 """
         pages.append((f"cheapest-newsletter-platform-{S}-subscribers.html", f"Cheapest Newsletter Platform for {S:,} Subscribers (" + DATA["verified_on"][:4] + ")",
                       f"Every newsletter platform ranked by monthly cost at {S:,} subscribers, for free and paid newsletters, using prices verified " + DATA["verified_on"] + ".", body, None))
