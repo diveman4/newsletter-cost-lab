@@ -223,6 +223,7 @@ def build(base):
 
     COMPARISONS = [("kit-vs-beehiiv-cost.html", "Kit vs beehiiv"), ("mailerlite-vs-kit-cost.html", "MailerLite vs Kit"),
                    ("ghost-vs-beehiiv-cost.html", "Ghost(Pro) vs beehiiv"), ("mailerlite-vs-beehiiv-cost.html", "MailerLite vs beehiiv"),
+                   ("kit-vs-systemeio-cost.html", "Kit vs systeme.io"),
                    ("substack-fees.html", "Substack vs beehiiv and Ghost (fees)")]
 
 
@@ -290,6 +291,7 @@ def build(base):
 <li><a href="mailerlite-vs-kit-cost.html">MailerLite vs Kit cost at every list size</a></li>
 <li><a href="ghost-vs-beehiiv-cost.html">Ghost(Pro) vs beehiiv cost for free and paid newsletters</a></li>
 <li><a href="mailerlite-vs-beehiiv-cost.html">MailerLite vs beehiiv cost at every list size</a></li>
+<li><a href="kit-vs-systemeio-cost.html">Kit vs systeme.io cost for free and paid newsletters</a></li>
 <li><a href="substack-fees.html">Substack fees vs flat-price plans</a></li>
 </ul>
 <script src="assets/calc.js" defer></script>
@@ -700,6 +702,25 @@ def build(base):
               "MailerLite is an email marketing tool priced by subscribers; beehiiv is a newsletter platform with a website built in. This page puts their published prices side by side from 500 to 100,000 subscribers.",
               [f"<strong>Smallest paid plans:</strong> MailerLite {html.escape(_ml['plans'][0]['name'])} starts at {money(_ml['plans'][0]['tiers'][0][1])}/month billed yearly for up to {_ml['plans'][0]['tiers'][0][0]:,} subscribers; beehiiv {html.escape(_bh['plans'][0]['name'])} starts at {money(_bh['plans'][0]['tiers'][0][1])}/month billed yearly for up to {_bh['plans'][0]['tiers'][0][0]:,}."],
               title="MailerLite vs beehiiv Pricing Compared at Every List Size (" + DATA["verified_on"][:4] + ")")
+
+    _kt, _sy = P["kit"], P["systemeio"]
+    _sy_free = _sy["free_plan"]["max_subscribers"]
+    _kt_free = _kt["free_plan"]["max_subscribers"]
+    _sy_first = _sy["plans"][0]
+    _sy_cap = max(t[0] for pl in _sy["plans"] for t in pl["tiers"])
+    _sy_unl = next(pl for pl in _sy["plans"] if any(t[0] == _sy_cap for t in pl["tiers"]))
+    _kt_cr = next(pl for pl in _kt["plans"] if pl["name"] == "Creator")
+    _kt_next = next(t for t in _kt_cr["tiers"] if t[0] > _kt_free)
+    pair_page("kit", "systemeio", "kit-vs-systemeio-cost.html",
+              [1000, 2000, 2500, 5000, 10000, 15000, 25000, 50000],
+              [("kit", "Creator"), ("kit", "Pro")] + [("systemeio", pl["name"]) for pl in _sy["plans"]],
+              f"Kit (formerly ConvertKit) and systeme.io both let you charge readers on their free plans, but they price paid plans very differently: Kit steps up in subscriber tiers, while systeme.io has {len(_sy['plans'])} plans set by contact count, the largest with no cap in our data. This page puts their published prices side by side from 1,000 to 50,000 subscribers.",
+              [f"<strong>Both free up to {_sy_free:,}:</strong> for a free newsletter, both cost $0 up to {_sy_free:,} subscribers. Past that, Kit's free plan continues to {_kt_free:,}, while systeme.io moves to {html.escape(_sy_first['name'])} ({money(_sy_first['tiers'][0][1])}/month billed yearly, up to {_sy_first['tiers'][0][0]:,} contacts).",
+               f"<strong>Past Kit's free plan:</strong> Kit Creator is {money(_kt_next[1])}/month billed yearly up to {_kt_next[0]:,} subscribers and {money(_kt_cr['tiers'][-1][1])} up to {_kt_cr['tiers'][-1][0]:,} (the largest size in our data). systeme.io {html.escape(_sy_unl['name'])} stays at {money(_sy_unl['tiers'][0][1])}/month billed yearly, with no contact cap in our data.",
+               "<strong>Contacts vs subscribers:</strong> systeme.io prices by contacts (everyone on your list); Kit prices by subscribers. This page treats the two numbers as the same.",
+               f"<strong>systeme.io yearly prices</strong> are calculated from its \"2 months free\" offer on yearly billing."],
+              title="Kit vs systeme.io Cost for Free and Paid Newsletters (" + DATA["verified_on"][:4] + ")",
+              desc="Kit (ConvertKit) vs systeme.io prices side by side from 1,000 to 50,000 subscribers, for free and paid newsletters, yearly and monthly, using prices verified " + DATA["verified_on"] + ".")
 
     # ---- single-platform pricing pages (all numbers from platforms.json)
     def tier_price(plan, s, idx):
