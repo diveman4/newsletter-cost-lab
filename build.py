@@ -280,6 +280,7 @@ def build(base):
 <ul>
 <li><a href="kit-pricing.html">Kit pricing explained</a>: every plan and list size, yearly vs monthly</li>
 <li><a href="beehiiv-pricing.html">beehiiv pricing explained</a>: Free, Lite and Pro at every list size</li>
+<li><a href="beehiiv-discount.html">beehiiv discount and promo codes</a>: what actually lowers the price</li>
 <li><a href="mailerlite-pricing.html">MailerLite pricing explained</a>: Free, Comfort and Power at every list size</li>
 <li><a href="ghost-pricing.html">Ghost(Pro) pricing explained</a>: Starter, Publisher and Business at every list size</li>
 <li><a href="systemeio-pricing.html">systeme.io pricing explained</a>: Free, Startup, Webinar and Unlimited by contact count</li>
@@ -739,7 +740,7 @@ def build(base):
                 best = (q, c)
         return best
 
-    def pricing_page(pid, fname, extra_note="", size_labels=None, unit="subscribers"):
+    def pricing_page(pid, fname, extra_note="", size_labels=None, unit="subscribers", title=None, desc=None, extra_related=""):
         size_labels = size_labels or {}
         p = P[pid]
         fp = p["free_plan"]
@@ -821,22 +822,28 @@ def build(base):
 <li><a href="cheapest-newsletter-platform-10000-subscribers.html">Cheapest newsletter platform for 10,000 subscribers</a></li>
 <li><a href="cheapest-newsletter-platform-25000-subscribers.html">Cheapest newsletter platform for 25,000 subscribers</a></li>
 <li>Other price guides: {", ".join(f'<a href="{g}">{html.escape(t)}</a>' for g, t in PRICING_GUIDES if g != fname)}</li>
-<li><a href="free-plans.html">Free plans compared</a></li>
+{extra_related}<li><a href="free-plans.html">Free plans compared</a></li>
 <li><a href="changelog.html">Price change log</a></li>
 </ul>
 {test_section(p) or f"<p>We haven't run hands-on tests of {html.escape(p['name'])} yet, so this page covers published prices and limits only.</p>"}
 """
-        pages.append((fname, f"{p['name']} Pricing {year}{fm_name}: Every Plan and List Size Explained",
-                      f"{p['name']}{fm_name} pricing at every subscriber count: free plan limit, {plan_names} prices on yearly and monthly billing, and paid-newsletter fees. Verified {DATA['verified_on']}.", body, None))
+        pages.append((fname, title or f"{p['name']} Pricing {year}{fm_name}: Every Plan and List Size Explained",
+                      desc or f"{p['name']}{fm_name} pricing at every subscriber count: free plan limit, {plan_names} prices on yearly and monthly billing, and paid-newsletter fees. Verified {DATA['verified_on']}.", body, None))
 
-    pricing_page("kit", "kit-pricing.html")
-    pricing_page("beehiiv", "beehiiv-pricing.html")
+    _yr = DATA["verified_on"][:4]
+    pricing_page("kit", "kit-pricing.html",
+                 title=f"Kit Pricing & Plans {_yr} (formerly ConvertKit): Free, Creator and Pro at Every List Size",
+                 desc=f"What each Kit (ConvertKit) plan costs: free up to {P['kit']['free_plan']['max_subscribers']:,} subscribers, then Creator and Pro prices from {min(t[0] for pl in P['kit']['plans'] for t in pl['tiers']):,} to {max(t[0] for pl in P['kit']['plans'] for t in pl['tiers']):,} subscribers, yearly and monthly, plus Kit's paid-newsletter fee. Verified {DATA['verified_on']}.")
+    pricing_page("beehiiv", "beehiiv-pricing.html",
+                 extra_related='<li><a href="beehiiv-discount.html">beehiiv discount and promo codes: what actually lowers the price</a></li>\n')
     pricing_page("mailerlite", "mailerlite-pricing.html")
     _g = P["ghost"]
     _g_nopaid = [pl["name"] for pl in _g["plans"] if not pl["paid_subscriptions"]]
     _g_paid = [pl["name"] for pl in _g["plans"] if pl["paid_subscriptions"]]
     _g_start = next(pl for pl in _g["plans"] if pl["name"] == "Starter")
-    pricing_page("ghost", "ghost-pricing.html",
+    pricing_page("ghost", "ghost-pricing.html", title=f"Ghost Pro Pricing {_yr}: Ghost(Pro) Starter, Publisher and Business Plans by Member Count",
+                 desc=f"What Ghost(Pro) costs per month from {min(t[0] for pl in P['ghost']['plans'] for t in pl['tiers']):,} to {max(t[0] for pl in P['ghost']['plans'] for t in pl['tiers']):,} members: Starter, Publisher and Business prices on yearly and monthly billing, and Ghost's {P['ghost']['fee_model']['pct']:g}% fee on paid memberships. Verified {DATA['verified_on']}.",
+                 extra_note=
                  f"Starter is listed up to {_g_start['tiers'][-1][0]:,} members only. "
                  f"Paid memberships need {' or '.join(_g_paid)}; {', '.join(_g_nopaid)} does not include them. "
                  f"Ghost's pricing page shows the Business price below {_g['plans'][-1]['tiers'][0][0]:,} members at its {_g['plans'][-1]['tiers'][0][0]:,}-member rate. "
@@ -851,6 +858,71 @@ def build(base):
                  "The free plan also includes funnels, courses and checkout, so you're not paying for email alone. "
                  "Payment processor fees still apply; the fee above assumes Stripe's standard US rate.",
                  size_labels={_s_cap: "No limit"}, unit="contacts")
+
+    # ---- beehiiv discounts (numbers from platforms.json: tiers, referral_offer, yearly_saving_claim)
+    _b = P["beehiiv"]
+    _ro = _b.get("referral_offer")
+    _ys = _b.get("yearly_saving_claim")
+    if _ro:
+        _bf = _b["free_plan"]["max_subscribers"]
+        _pct, _mon = _ro["discount_pct"], _ro["discount_months"]
+        _lite = next(pl for pl in _b["plans"] if pl["name"] == "Lite")
+        _show = [t for t in _lite["tiers"] if t[0] in (1000, 2500, 5000, 10000, 25000, 50000, 100000)]
+        d_rows = ""
+        for s_, y_, m_ in _show:
+            yearly_save = (m_ - y_) * 12
+            ref_save = m_ * _pct / 100 * _mon
+            first_year_ref = m_ * 12 - ref_save
+            d_rows += (f"<tr><td>{s_:,}</td><td>{money(m_)}</td><td>{money(y_)}</td>"
+                       f"<td>{money(yearly_save)}</td><td>{money(ref_save)}</td><td>{money(first_year_ref)}</td><td>{money(y_ * 12)}</td></tr>")
+        pro = next(pl for pl in _b["plans"] if pl["name"] == "Pro")
+        p_rows = ""
+        for s_, y_, m_ in [t for t in pro["tiers"] if t[0] in (1000, 10000, 25000, 100000)]:
+            p_rows += f"<tr><td>{s_:,}</td><td>{money(m_)}</td><td>{money(y_)}</td><td>{money((m_ - y_) * 12)}</td><td>{money(m_ * _pct / 100 * _mon)}</td></tr>"
+        alt_rows = ""
+        for s_ in (5000, 10000, 25000, 50000):
+            c = cost(_b, s_)
+            o = cheapest_other(_b, s_)
+            if "total" in c and o:
+                alt_rows += f"<tr><td>{s_:,}</td><td>{money(c['total'])}<small>{html.escape(c['plan'])}</small></td><td>{html.escape(o[0]['name'])} {html.escape(o[1]['plan'])}: {money(o[1]['total'])}</td></tr>"
+        l1 = _lite["tiers"][0]
+        _yearly_wins = all((m_ - y_) * 12 > m_ * _pct / 100 * _mon for _, y_, m_ in _show)
+        _cmp_txt = ("Over a full year, yearly billing saves more than the referral offer at every Lite list size below."
+                    if _yearly_wins else "Which saves more depends on your list size; see the table below.")
+        body = f"""
+<h1>beehiiv discount, coupon and promo codes: what actually lowers the price</h1>
+<p class="lede">People search for a beehiiv coupon before they upgrade. Here is what beehiiv's own pages offered when we checked on {html.escape(_ro['verified_on'])}, and how much each option saves at your list size. Every price comes from beehiiv's <a href="{html.escape(_b['pricing_url'])}" rel="noopener" target="_blank">pricing page</a>.</p>
+{disclosure_box('')}
+<div class="answer"><p><strong>Is there a beehiiv discount code?</strong> beehiiv's pricing page showed no coupon or promo code when we checked. The ways to pay less are: stay on the free plan (up to {_bf:,} subscribers), pay yearly, and the partner-referral offer: according to beehiiv's <a href="{html.escape(_ro['source'])}" rel="noopener" target="_blank">partner page</a>, customers referred through a partner link get a {_ro['trial_days']}-day trial and {_pct}% off their first {_mon} months. {_cmp_txt}</p></div>
+<h2>The short version</h2>
+<ul>
+<li><strong>Free plan:</strong> {html.escape(_b['free_plan']['summary'])} If you're under {_bf:,} subscribers and don't charge readers, the cheapest beehiiv is $0.</li>
+<li><strong>Yearly billing:</strong> {("beehiiv's pricing FAQ says: &ldquo;" + html.escape(_ys['text']) + "&rdquo;") if _ys else ''} On Lite at {l1[0]:,} subscribers that's {money(l1[1])}/month instead of {money(l1[2])}, or {money((l1[2] - l1[1]) * 12)} a year.</li>
+<li><strong>Partner referral offer:</strong> {_pct}% off the first {_mon} months. On Lite at {l1[0]:,} subscribers, month to month, that's {money(l1[2] * _pct / 100 * _mon)} in total. {html.escape(_ro.get('note', ''))}</li>
+<li><strong>Coupon sites:</strong> we only list offers shown on beehiiv's own pages. We can't vouch for codes posted elsewhere.</li>
+</ul>
+<h2>What each option saves on beehiiv Lite</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers up to</th><th>Monthly price</th><th>Yearly billing (per month)</th><th>Yearly billing saves / year</th><th>Referral offer saves ({_pct}% &times; {_mon} months)</th><th>First year, monthly + referral offer</th><th>First year, yearly billing</th></tr></thead><tbody>{d_rows}</tbody></table></div>
+<p class="fine">Referral savings are calculated on month-to-month prices, because beehiiv's partner page doesn't say whether the {_pct}% applies to yearly billing. Whether the offer can be combined with yearly billing isn't stated either. Taxes not included.</p>
+<h2>Same numbers for beehiiv Pro</h2>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers up to</th><th>Monthly price</th><th>Yearly billing (per month)</th><th>Yearly billing saves / year</th><th>Referral offer saves</th></tr></thead><tbody>{p_rows}</tbody></table></div>
+<h2>Is beehiiv the cheapest option at your size?</h2>
+<p>A discount matters less than picking the right platform. For a free newsletter on yearly billing, here is beehiiv's cheapest plan next to the cheapest plan on any other platform we track (Substack excluded):</p>
+<div class="scroll"><table class="grid-table"><thead><tr><th>Subscribers</th><th>{platform_link(_b)}</th><th>Cheapest elsewhere</th></tr></thead><tbody>{alt_rows}</tbody></table></div>
+<p class="fine">Plans differ in features, so the cheapest price isn't automatically the best fit. beehiiv takes {_b['fee_model']['pct']:g}% of paid-subscription revenue (Stripe fees still apply); for paid newsletters, run your numbers in the <a href="index.html">cost calculator</a>.</p>
+{cta(_b, DATA['verified_on'])}
+<p class="fine">Our beehiiv links are partner (affiliate) links, marked *. beehiiv's partner page says referred customers get the offer above; we haven't gone through beehiiv's checkout ourselves to confirm how it appears. If you'd rather not use our link, go to beehiiv's site directly: the prices on this page are the same either way.</p>
+<h2>Related</h2>
+<ul>
+<li><a href="beehiiv-pricing.html">beehiiv pricing explained</a>: Free, Lite and Pro at every list size</li>
+{"".join(f'<li><a href="{f}">{html.escape(t)} cost compared</a></li>' for f, t in COMPARISONS if "beehiiv" in f)}
+<li><a href="free-plans.html">Free plans compared</a></li>
+<li><a href="changelog.html">Price change log</a></li>
+</ul>
+{test_section(_b) or "<p>We haven't run hands-on tests of beehiiv yet, so this page covers published prices and beehiiv's published offers only.</p>"}
+"""
+        pages.append(("beehiiv-discount.html", f"beehiiv Discount, Coupon and Promo Codes ({DATA['verified_on'][:4]}): What Actually Saves Money",
+                      f"No beehiiv promo code was shown on beehiiv's pricing page. What does save money: the free plan up to {_bf:,} subscribers, yearly billing, and beehiiv's {_pct}%-off-{_mon}-months partner referral offer, with the savings at each list size. Checked {_ro['verified_on']}.", body, None))
 
     # ---- cheapest at 10,000 subscribers
     def rank_rows(s, paid=0, price=0, billing="annual", include_substack=True):

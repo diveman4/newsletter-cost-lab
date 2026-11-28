@@ -1,5 +1,5 @@
 {
-  "verified_on": "2026-11-21",
+  "verified_on": "2026-11-28",
   "currency": "USD",
   "notes": "Prices are the monthly amount shown on each vendor's public pricing page. 'annual' = monthly equivalent when billed yearly; 'monthly' = billed month-to-month. A tier value applies up to that subscriber count. null = not offered / not verified.",
   "processing": {
@@ -286,6 +286,20 @@
       "affiliate_program": {
         "summary": "Up to 60% of a referral's payments for 12 months: 50% from your first conversion (Bronze), 55% at Silver, 60% at Gold. Requires a beehiiv account; payouts monthly via Dub.",
         "source": "https://www.beehiiv.com/partners"
+      },
+      "referral_offer": {
+        "summary": "Customers referred through a beehiiv partner link get a 14-day trial and 20% off their first 3 months.",
+        "discount_pct": 20,
+        "discount_months": 3,
+        "trial_days": 14,
+        "source": "https://www.beehiiv.com/partners",
+        "verified_on": "2026-11-28",
+        "note": "beehiiv's partner page does not say whether the 20% also applies to yearly billing."
+      },
+      "yearly_saving_claim": {
+        "text": "Yearly billing saves up to 20% compared with paying month to month.",
+        "source": "https://www.beehiiv.com/pricing",
+        "verified_on": "2026-11-28"
       }
     },
     {
@@ -773,6 +787,15 @@
     }
   ],
   "changelog": [
+    {
+      "date": "2026-11-28",
+      "changes": [
+        "Re-checked all prices (Kit, beehiiv, MailerLite, Ghost(Pro), Substack, systeme.io, Buttondown), yearly and month-to-month; no changes. Free-plan limits unchanged.",
+        "beehiiv: recorded two statements from beehiiv's own pages for the new beehiiv discount page: its partner page says customers referred through a partner link get a 14-day trial and 20% off their first 3 months; its pricing FAQ says yearly billing saves up to 20%. No coupon or promo code was shown on beehiiv's pricing page.",
+        "Temporary offers seen but not used in our tables: Kit's monthly Creator plan is still 50% off for the first 3 months (offer ends Dec 1); MailerLite shows a 26% discount code for annual plans. systeme.io's page also lists a custom-priced 'For teams' plan, which isn't in our tables. The standard prices are listed.",
+        "Affiliate programs re-checked (Kit, beehiiv, systeme.io): no changes."
+      ]
+    },
     {
       "date": "2026-11-21",
       "changes": [
