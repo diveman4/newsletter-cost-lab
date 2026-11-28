@@ -1,5 +1,267 @@
 [
   {
+    "date": "2026-11-28",
+    "data_range": "Search Console data through 2026-11-25. Last 7 days = 2026-11-19 to 2026-11-25; last 28 days shows data from 2026-11-06.",
+    "clicks_7d": 0,
+    "impressions_7d": 236,
+    "ctr_7d": 0.0,
+    "avg_position_7d": 47.6,
+    "clicks_28d": 0,
+    "impressions_28d": 290,
+    "ctr_28d": 0.0,
+    "avg_position_28d": 47.5,
+    "top_queries": [
+      {
+        "query": "systeme.io pricing",
+        "clicks": 0,
+        "impressions": 36,
+        "ctr": 0.0,
+        "position": 63.8
+      },
+      {
+        "query": "mailerlite pricing",
+        "clicks": 0,
+        "impressions": 26,
+        "ctr": 0.0,
+        "position": 66.9
+      },
+      {
+        "query": "systeme io pricing",
+        "clicks": 0,
+        "impressions": 26,
+        "ctr": 0.0,
+        "position": 70.4
+      },
+      {
+        "query": "ghost pricing",
+        "clicks": 0,
+        "impressions": 13,
+        "ctr": 0.0,
+        "position": 76.0
+      },
+      {
+        "query": "ghost pro",
+        "clicks": 0,
+        "impressions": 7,
+        "ctr": 0.0,
+        "position": 17.6
+      },
+      {
+        "query": "kit vs mailerlite",
+        "clicks": 0,
+        "impressions": 6,
+        "ctr": 0.0,
+        "position": 65.2
+      },
+      {
+        "query": "mailerlite vs convertkit",
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0.0,
+        "position": 59.6
+      },
+      {
+        "query": "mailerlite cost",
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0.0,
+        "position": 66.4
+      },
+      {
+        "query": "mailerlite plans",
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0.0,
+        "position": 69.2
+      },
+      {
+        "query": "beehiiv discount code",
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0.0,
+        "position": 84.8
+      }
+    ],
+    "other_queries_7d": [
+      "beehiiv coupon code (5, pos 85.4)",
+      "kit pricing (4, pos 52.5)",
+      "ghost subscription (3, pos 8.3)",
+      "beehiiv promo code (3, pos 85.7)",
+      "ghost(pro) (2, pos 3.5)",
+      "kit plans (2, pos 5.5)",
+      "ghostpro (2, pos 39.5)",
+      "mailerlite price (2, pos 65.5)",
+      "mailerlite pricing plans (2, pos 65.5)",
+      "how much does mailerlite cost (2, pos 73.5)",
+      "price of kit (1, pos 2.0)",
+      "ghost membership (1, pos 10.0)",
+      "kit fee (1, pos 33.0)",
+      "tarif systeme io (1, pos 41.0)",
+      "kit plan (1, pos 47.0)",
+      "pricing kits (1, pos 54.0)",
+      "systeme.io pricing plans (1, pos 63.0)",
+      "convertkit vs mailerlite (1, pos 69.0)",
+      "beehiiv pricing plans (1, pos 76.0)"
+    ],
+    "top_pages": [
+      {
+        "page": "/systemeio-pricing.html",
+        "clicks": 0,
+        "impressions": 69,
+        "ctr": 0.0,
+        "position": 61.7
+      },
+      {
+        "page": "/ghost-pricing.html",
+        "clicks": 0,
+        "impressions": 46,
+        "ctr": 0.0,
+        "position": 30.7
+      },
+      {
+        "page": "/mailerlite-pricing.html",
+        "clicks": 0,
+        "impressions": 45,
+        "ctr": 0.0,
+        "position": 63.4
+      },
+      {
+        "page": "/kit-pricing.html",
+        "clicks": 0,
+        "impressions": 42,
+        "ctr": 0.0,
+        "position": 16.5
+      },
+      {
+        "page": "/beehiiv-pricing.html",
+        "clicks": 0,
+        "impressions": 22,
+        "ctr": 0.0,
+        "position": 57.8
+      },
+      {
+        "page": "/mailerlite-vs-kit-cost.html",
+        "clicks": 0,
+        "impressions": 12,
+        "ctr": 0.0,
+        "position": 63.2
+      }
+    ],
+    "top_pages_28d": [
+      {
+        "page": "/systemeio-pricing.html",
+        "impressions": 69,
+        "position": 61.7
+      },
+      {
+        "page": "/kit-pricing.html",
+        "impressions": 68,
+        "position": 25.3
+      },
+      {
+        "page": "/mailerlite-pricing.html",
+        "impressions": 58,
+        "position": 62.8
+      },
+      {
+        "page": "/ghost-pricing.html",
+        "impressions": 57,
+        "position": 35.9
+      },
+      {
+        "page": "/beehiiv-pricing.html",
+        "impressions": 23,
+        "position": 55.4
+      },
+      {
+        "page": "/mailerlite-vs-kit-cost.html",
+        "impressions": 12,
+        "position": 63.2
+      },
+      {
+        "page": "/kit-vs-beehiiv-cost.html",
+        "impressions": 2,
+        "position": 6.0
+      },
+      {
+        "page": "/substack-fees.html",
+        "impressions": 1,
+        "position": 65.0
+      }
+    ],
+    "index_status": {
+      "report_updated": "2026-11-23",
+      "indexed_count": 12,
+      "indexed": [
+        "/",
+        "/kit-pricing.html",
+        "/beehiiv-pricing.html",
+        "/kit-vs-beehiiv-cost.html",
+        "/substack-fees.html",
+        "/mailerlite-pricing.html",
+        "/ghost-pricing.html",
+        "/systemeio-pricing.html",
+        "/guides/choose-your-first-newsletter-platform.html",
+        "/mailerlite-vs-kit-cost.html",
+        "/methodology.html",
+        "/mailerlite-vs-beehiiv-cost.html"
+      ],
+      "not_indexed_count": 3,
+      "not_indexed": [
+        {
+          "url": "/kit-vs-systemeio-cost.html",
+          "reason": "Crawled - currently not indexed",
+          "last_crawl": "2026-11-25"
+        },
+        {
+          "url": "/hands-on-tests.html",
+          "reason": "Crawled - currently not indexed",
+          "last_crawl": "2026-11-25"
+        },
+        {
+          "url": "/ghost-vs-beehiiv-cost.html",
+          "reason": "Crawled - currently not indexed",
+          "last_crawl": "2026-11-21"
+        }
+      ],
+      "not_indexed_note": "Not yet in either list (not discovered/reported yet): free-plans, cheapest-1000/5000/10000/25000 (all requested 11-15 to 11-21), changelog, about, disclosure, privacy, contact."
+    },
+    "sitemap": "/sitemap.xml: still 'Couldn't fetch' (取得できませんでした), 0 discovered pages, no last-read date. Live sitemap returns 200 application/xml with 26 URLs. 2026-11-28: Claude resubmitted sitemap.xml once (Search Console confirmed 'サイトマップを送信しました'); submitted date now 2026/11/28, status still 'Couldn't fetch' right after.",
+    "indexing_requested": [
+      {
+        "url": "/beehiiv-discount.html",
+        "date": "2026-11-28",
+        "by": "Claude"
+      },
+      {
+        "url": "/changelog.html",
+        "date": "2026-11-28",
+        "by": "Claude"
+      },
+      {
+        "url": "/about.html",
+        "date": "2026-11-28",
+        "by": "Claude"
+      },
+      {
+        "url": "/disclosure.html",
+        "date": "2026-11-28",
+        "by": "Claude"
+      },
+      {
+        "url": "/privacy.html",
+        "date": "2026-11-28",
+        "by": "Claude"
+      }
+    ],
+    "actions": [
+      "New page /beehiiv-discount.html (queries 'beehiiv discount code' 5, 'beehiiv coupon code' 5, 'beehiiv promo code' 3 impressions; no page covered them).",
+      "Title/description of /kit-pricing.html changed to include 'Plans' ('kit plans' pos 5.5, 'price of kit' pos 2.0, 0 clicks).",
+      "Title/description of /ghost-pricing.html changed to lead with 'Ghost Pro' ('ghost pro' 7 impr pos 17.6, 'ghost(pro)' pos 3.5, 'ghost subscription' pos 8.3, 0 clicks)."
+    ],
+    "comparison_vs_last_week": "Impressions 7d: 43 -> 236 (28d: 54 -> 290). Clicks still 0. Avg position 48.8 -> 47.6. Indexed pages 7 -> 12 (systemeio-pricing, guide, mailerlite-vs-kit, methodology, mailerlite-vs-beehiiv newly indexed). systeme.io pricing queries appeared and lead impressions (63 across 3 variants, pos 63-70). Kit pricing page improved to avg pos 16.5 (7d)."
+  },
+  {
     "date": "2026-11-21",
     "data_range": "Search Console data through 2026-11-18. Last 7 days = 2026-11-12 to 2026-11-18; last 28 days shows data from 2026-11-06.",
     "clicks_7d": 0,
